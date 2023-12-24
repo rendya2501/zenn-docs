@@ -9,7 +9,8 @@ published: false
 ## はじめに
 
 完全に個人用の勉強メモです。  
-Oracleの勉強の為に環境を立ち上げて色々いじってみるつもりでしたが、ローカルの環境を汚したくないのと、Dockerもついでに勉強しておこうということで、ほぼ[こちらの記事(【Docker】Oracleを無料で簡単にローカルに構築する)](https://zenn.dev/re24_1986/articles/29430f2f8b4b46)を参考にしつつ、躓いたところをまとめつつ、ついでになので立ち上げた環境に対して.Net(C#)でアクセスしてみるまでをまとめました。  
+Oracleの勉強の為に環境を立ち上げて色々いじってみるつもりでしたが、ローカルの環境を汚したくないのと、[
+Dockerもついでに勉強しておくかぁ」ということで、ほぼこちらの記事([【Docker】Oracleを無料で簡単にローカルに構築する)](https://zenn.dev/re24_1986/articles/29430f2f8b4b46)を参考にしつつ、躓いたところをまとめつつ、ついでになので立ち上げた環境に対して.Net(C#)でアクセスしてみるまでをまとめました。  
 
 ## 環境
 
@@ -19,15 +20,17 @@ Oracleの勉強の為に環境を立ち上げて色々いじってみるつも�
 
 ## Docker環境構築
 
-Dockerの環境構築に関しては参考記事の通りに進めていけば問題ありませんが、使用するターミナルは`git bash`以外が良いです。
-Windows使っている場合はPowerShell使っておけば問題ないです。  
-理由は`git bash`だと`docker command`が認識できないからです。  
+Dockerの環境構築に関しては参考記事の通りに進めていけば基本的に問題はありません。  
+使用するターミナルは`git bash`以外が良いです。  
+理由は忘れました。後でちゃんと調べておきます。  
+しかし、PowerShellを使ったらあっさり解決したのは覚えています。  
+~~理由は`git bash`だと`docker command`が認識できないからです。~~  
 
 - リポジトリのクローン  
 - ORACLE EXPRESS EDITIONのダウンロード  
 - リポジトリにダウンロードしたOracleを配置  
 
-ここまでは手順どおりで問題ありませんが、[イメージ作成シェルの実行]は参考コードでは動きません。  
+ここまでは手順どおりで問題ありませんが、`イメージ作成シェルの実行`は参考コードでは動きません。  
 カレントディレクトリのパス指定は`.\`ではなく`./`が正解です。  
 
 ``` bash
@@ -37,21 +40,24 @@ Windows使っている場合はPowerShell使っておけば問題ないです。
 .\buildContainerImage.sh -v 21.3.0 -x -i
 ```
 
-この作業で結構待ちます。
-
 ## .NETから接続してみる
 
-- プロジェクト作成  
-  - ConsoleApp  
-  - .NET 6  
-- NuGet インストール  
-  - Dapper 2.1.24  
-  - Oracle.ManagedDataAccess 21.12.0  
-  - Oracle.ManagedDataAccess.Core 3.21.120  
+プロジェクト作成  
 
-以下コピペ  
+- ConsoleApp
+- .NET 6  
 
-``` c#
+NuGet インストール
+
+- Dapper 2.1.24
+- Oracle.ManagedDataAccess.Core 3.21.120  
+
+愚直に接続。  
+テーブルが存在しなければ作成するクエリを実行。(ChatGPTに作ってもらいました。)  
+適当にデータを挿入。  
+単純にSELECTして表示。
+
+``` c# : サンプルコード
 using Dapper;
 using Oracle.ManagedDataAccess.Client;
 
