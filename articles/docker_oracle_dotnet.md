@@ -29,7 +29,7 @@ Dockerの環境構築に関しては参考記事の通りに進めていけば�
 - ORACLE EXPRESS EDITIONのダウンロード  
 - リポジトリにダウンロードしたOracleを配置  
 
-ここまでは手順どおりで問題ありませんが、`イメージ作成シェルの実行`は参考コードでは動きません。  
+ここまでは手順どおりで問題ありませんが、[イメージ作成シェルの実行]は参考コードでは動きません。  
 カレントディレクトリのパス指定は`.\`ではなく`./`が正解です。  
 
 ``` bash
@@ -38,6 +38,14 @@ Dockerの環境構築に関しては参考記事の通りに進めていけば�
 # 元のコード
 .\buildContainerImage.sh -v 21.3.0 -x -i
 ```
+
+後は引き続き参考サイトの通りにやれば良いです。  
+
+- 生成物確認
+  - docker images
+- ymlファイル作成
+- コンテナ作成 & 起動
+  - docker-compose up -d  
 
 ## .NETから接続してみる
 
@@ -111,25 +119,22 @@ public class SampleTable
 }
 ```
 
-次の構文は一番最初に試した構文ですが、接続できませんでした。  
+次の接続文字列は一番最初に試したですが、接続できませんでした。  
 
 ``` cs
 "User Id=sys;Password=passw0rd;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=XE)));";
 ```
 
-`Connection Timeout=0;`と`DBA Privilege=SYSDBA;`を含めることで接続できますが、無理やり接続するためのオプションなので良くはないはずです。  
+色々四苦八苦して、結果的に、`Connection Timeout=0;`と`DBA Privilege=SYSDBA;`を含めることで接続することが出来ましたが、明らかに良くない書き方なので、あくまでサンプルとして見てください。  
+なぜダメなのかも後で調べておきます。  
 
-``` cs
-"User Id=sys;Password=passw0rd;Connection Timeout=0;DBA Privilege=SYSDBA;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=XEPDB1)));";
-```
-
-接続がうまく行かない時に参考にしたサイト群  
+以下、接続がうまく行かない時に参考にしたサイト群  
 
 - [Oracle Data Provider for .NET (ODP.NET) で ORA-12154 が発生した場合の対処](https://blog.officekoma.co.jp/2017/11/oracle-data-provider-for-net-odpnet-ora.html) 
 - [Oracle.ManagedDataAccess: ORA-01882: timezone region not found' - Oracle Forums](https://forums.oracle.com/ords/apexds/post/oracle-manageddataaccess-ora-01882-timezone-region-not-foun-9972) 
 - [UseHourOffsetForUnsupportedTimezone](https://docs.oracle.com/en/database/oracle/oracle-database/21/odpnt/ConnectionUseHourOffsetForUnsupportedTimezone.html#GUID-C66B87C3-0DBB-4609-A57A-D7F9FAD79F72)
 - [Oracle.ManagedDataAccess Connection request timed out – iTecNote](https://itecnote.com/tecnote/oracle-manageddataaccess-connection-request-timed-out/)
 
-## 参考
+## 参考サイト
 
 [【Docker】Oracleを無料で簡単にローカルに構築する](https://zenn.dev/re24_1986/articles/29430f2f8b4b46)
