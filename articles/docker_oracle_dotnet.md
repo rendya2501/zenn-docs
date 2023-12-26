@@ -1,9 +1,9 @@
 ---
-title: "【勉強メモ】Docker Oracle環境構築 + .Net接続サンプル"
+title: "【勉強メモ】DockerでOracleの環境構築 + .Net接続サンプル"
 emoji: "🕌"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: ["dotnet","docker","oracle","testaaaa"]
-published: false
+topics: ["dotnet","C#","docker","oracle"]
+published: true
 ---
 
 ## はじめに
@@ -11,11 +11,15 @@ published: false
 完全に個人用の勉強メモです。  
 Oracleの勉強の為に環境を立ち上げて色々いじってみるつもりでしたが、ローカルの環境を汚したくないのと、「Dockerもついでに勉強しておくかぁ」ということで、ほぼこちら([【Docker】Oracleを無料で簡単にローカルに構築する](https://zenn.dev/re24_1986/articles/29430f2f8b4b46))の記事を参考にしつつ、躓いたところをまとめつつ、ついでになので立ち上げた環境に対して.Net(C#)でアクセスして見る所までをまとめました。  
 
+<!-- --- -->
+
 ## 環境
 
 - Win11  
 - Docker 24.0.6, build ed223bc  
 - .NET 6
+
+<!-- --- -->
 
 ## Docker環境構築
 
@@ -39,6 +43,23 @@ Dockerの環境構築に関しては参考記事の通りに進めていけば�
 .\buildContainerImage.sh -v 21.3.0 -x -i
 ```
 
+<!--
+``` bash
+# ×
+$ cd docker-images\OracleDatabase\SingleInstance\dockerfiles\
+.\buildContainerImage.sh -v 21.3.0 -x -i
+# bash: cd: too many arguments
+
+# ×
+$ .\buildContainerImage.sh -v 21.3.0 -x -i
+# bash: .buildContainerImage.sh: command not found
+
+# ○
+cd docker-images\OracleDatabase\SingleInstance\dockerfiles\
+./buildContainerImage.sh -v 21.3.0 -x -i
+```
+-->
+
 後は引き続き参考サイトの通りにやれば良いです。  
 
 - 生成物確認
@@ -46,6 +67,8 @@ Dockerの環境構築に関しては参考記事の通りに進めていけば�
 - ymlファイル作成
 - コンテナ作成 & 起動
   - docker-compose up -d  
+
+<!-- --- -->
 
 ## .NETから接続してみる
 
@@ -134,6 +157,8 @@ public class SampleTable
 - [Oracle.ManagedDataAccess: ORA-01882: timezone region not found' - Oracle Forums](https://forums.oracle.com/ords/apexds/post/oracle-manageddataaccess-ora-01882-timezone-region-not-foun-9972) 
 - [UseHourOffsetForUnsupportedTimezone](https://docs.oracle.com/en/database/oracle/oracle-database/21/odpnt/ConnectionUseHourOffsetForUnsupportedTimezone.html#GUID-C66B87C3-0DBB-4609-A57A-D7F9FAD79F72)
 - [Oracle.ManagedDataAccess Connection request timed out – iTecNote](https://itecnote.com/tecnote/oracle-manageddataaccess-connection-request-timed-out/)
+
+<!-- --- -->
 
 ## 参考サイト
 
