@@ -43,20 +43,20 @@ Dockerの環境構築に関しては参考記事の通りに進めていけば�
 .\buildContainerImage.sh -v 21.3.0 -x -i
 ```
 
-<!-- ``` bash
-# ×
-$ cd docker-images\OracleDatabase\SingleInstance\dockerfiles\
-.\buildContainerImage.sh -v 21.3.0 -x -i
-# bash: cd: too many arguments
+<!-- ``` bash-->
+<!-- # × -->
+<!-- $ cd docker-images\OracleDatabase\SingleInstance\dockerfiles\ -->
+<!-- .\buildContainerImage.sh -v 21.3.0 -x -i -->
+<!-- # bash: cd: too many arguments -->
 
-# ×
-$ .\buildContainerImage.sh -v 21.3.0 -x -i
-# bash: .buildContainerImage.sh: command not found
-
-# ○
-cd docker-images\OracleDatabase\SingleInstance\dockerfiles\
-./buildContainerImage.sh -v 21.3.0 -x -i
-``` -->
+<!-- # × -->
+<!-- $ .\buildContainerImage.sh -v 21.3.0 -x -i -->
+<!-- # bash: .buildContainerImage.sh: command not found -->
+<!--  -->
+<!-- # ○ -->
+<!-- cd docker-images\OracleDatabase\SingleInstance\dockerfiles\ -->
+<!-- ./buildContainerImage.sh -v 21.3.0 -x -i -->
+<!-- ``` -->
 
 後は引き続き参考サイトの通りにやれば良いです。  
 
