@@ -2,7 +2,7 @@
 title: "【勉強メモ】DockerでOracleの環境構築 + .Net接続サンプル"
 emoji: "🕌"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: ["dotnet","C#","docker","oracle"]
+topics: ["dotnet","csharp","docker","oracle"]
 published: true
 ---
 
