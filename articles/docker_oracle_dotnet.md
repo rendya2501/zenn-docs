@@ -9,7 +9,7 @@ published: true
 ## はじめに
 
 完全に個人用の勉強メモです。  
-Oracleの勉強の為に環境を立ち上げて色々いじってみるつもりでしたが、ローカルの環境を汚したくないのと、「Dockerもついでに勉強しておくかぁ」ということで、ほぼこちら([【Docker】Oracleを無料で簡単にローカルに構築する](https://zenn.dev/re24_1986/articles/29430f2f8b4b46))の記事を参考にしつつ、躓いたところをまとめつつ、ついでになので立ち上げた環境に対して.Net(C#)でアクセスして見る所までをまとめました。  
+Oracleの勉強の為に環境を立ち上げて色々いじってみようと思い立ちましたが、「ローカルの環境を汚したくなぁ」ってのと、「Dockerもついでに勉強しておくかぁ」ということで、ほぼこちらの記事([【Docker】Oracleを無料で簡単にローカルに構築する](https://zenn.dev/re24_1986/articles/29430f2f8b4b46))を参考にしつつ、躓いたところをまとめたり、ついでに立ち上げた環境に対してC#(.Net)でアクセスしてみる所までをまとめました。  
 
 <!-- --- -->
 
@@ -27,7 +27,6 @@ Dockerの環境構築に関しては参考記事の通りに進めていけば�
 使用するターミナルは`git bash`以外が良いです。  
 理由は忘れました。後でちゃんと調べておきます。  
 しかし、PowerShellを使ったらあっさり解決したのは覚えています。  
-~~理由は`git bash`だと`docker command`が認識できないからです。~~  
 
 - リポジトリのクローン  
 - ORACLE EXPRESS EDITIONのダウンロード  
@@ -59,16 +58,20 @@ Dockerの環境構築に関しては参考記事の通りに進めていけば�
 
 - ConsoleApp
 - .NET 6  
+- トップレベルステートは使用しない  
 
 NuGet インストール
 
 - Dapper 2.1.24
 - Oracle.ManagedDataAccess.Core 3.21.120  
 
+簡単なサンプルなので、ChatGPTに作ってもらいました。  
+ただ、接続文字列だけは修正が必要だったので、それに関しては後半で解説しています。  
+
 愚直に接続。  
-テーブルが存在しなければ作成するクエリを実行。(ChatGPTに作ってもらいました。)  
+テーブルが存在しなければ作成するクエリを実行。  
 適当にデータを挿入。  
-単純にSELECTして表示。
+単純にSELECTして表示。  
 
 ``` c# : サンプルコード
 using Dapper;
@@ -80,11 +83,13 @@ internal class Program
 {
     static void Main(string[] args)
     {
+        // 接続文字列
         string connectionString = "User Id=sys;Password=passw0rd;Connection Timeout=0;DBA Privilege=SYSDBA;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=XEPDB1)));";
 
+        // DB接続
         using OracleConnection db = new(connectionString);
 
-        // テーブルの作成
+        // テーブルの作成クエリ実行
         var createTableQuery = @"
                 BEGIN
                     EXECUTE IMMEDIATE 'CREATE TABLE SampleTable (
@@ -98,7 +103,6 @@ internal class Program
                             RAISE;
                         END IF;
                 END;";
-
         db.Execute(createTableQuery);
 
         // データの挿入
@@ -110,6 +114,7 @@ internal class Program
         var selectQuery = "SELECT * FROM SampleTable";
         var data = db.Query<SampleTable>(selectQuery);
 
+        // データの表示
         foreach (var item in data)
         {
             Console.WriteLine($"ID: {item.Id}, Name: {item.Name}, Age: {(int)item.Age}");
@@ -125,13 +130,14 @@ public class SampleTable
 }
 ```
 
-次の接続文字列は一番最初に試したですが、接続できませんでした。  
+次の接続文字列はChatGPTが一番最初に生成した物ですが、これでは接続できませんでした。  
+(エラーメッセージも残しておけばよかったです。)  
 
 ``` cs
 "User Id=sys;Password=passw0rd;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=XE)));";
 ```
 
-色々四苦八苦して、結果的に、`Connection Timeout=0;`と`DBA Privilege=SYSDBA;`を含めることで接続することが出来ましたが、明らかに良くない書き方なので、あくまでサンプルとして見てください。  
+試行錯誤の結果、接続文字列に`Connection Timeout=0;`と`DBA Privilege=SYSDBA;`を含めることで接続することが出来ましたが、明らかに良くない書き方なので、あくまでサンプルとして見てください。  
 なぜダメなのかも後で調べておきます。  
 
 以下、接続がうまく行かない時に参考にしたサイト群  
