@@ -1,3 +1,16 @@
+# メモ
+
+※コマンドはzenn-docsのルートで実行すること  
+
+記事の作成コマンド  
+`npx zenn new:article`  
+
+記事のプレビューコマンド  
+`npx zenn preview`  
+
+<!-- --- -->
+
+## 1_docker_oracle_dotnet
 
 ``` bash
 # ×
