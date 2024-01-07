@@ -139,3 +139,5 @@ public class Adapter
 ## 参考
 
 [デザインパターン入門Adapterパターンについて](https://zenn.dev/komorimisaki422/articles/6ea4594bb875d2)  
+[](https://ie.u-ryukyu.ac.jp/~e085739/java.it.6.html)
+[](https://qiita.com/yutoo89/items/5bcdeb0e971477460366)
