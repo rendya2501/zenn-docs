@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/rendya2501/zenn-docs#readme",
   "dependencies": {
-    "zenn-cli": "^0.1.150"
+    "zenn-cli": "^0.1.158"
   }
 }
