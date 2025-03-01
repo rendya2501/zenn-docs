@@ -6,6 +6,26 @@ topics: ["csharp","Notion","GitHubActions"]
 published: false
 ---
 
+## 概要
+
+Notion をヘッドレスCMS として活用し、記事を GitHub に自動で反映させる仕組みを構築する方法を紹介します。  
+本記事では、Notion のデータベースを記事管理の中心に据え、GitHub Actions を活用して Notion の内容をマークダウン形式で GitHub リポジトリに同期させる手順を詳しく解説します。  
+
+この方法を使うことで、Notion 上で記事を作成・編集するだけで、自動的に GitHub に反映されるようになります。  
+
+## やりたいこと
+
+1. Notionの勉強用データベースにその日の学習記録をつける。  
+2. GitHubActionsでNotionデータベースから、その記事のマークダウンファイルを生成し、勉強用リポジトリにプッシュする。  
+
+記事をNotionにまとめて、その活動記録をgithubの草として自動的に反映させたい。
+
+似たようなことをしている記事があったのでまとめる。
+
+しかし、どの記事でも具体的な方法が書かれていないので実現には至っていない。
+
+上手くいっているリポジトリをフォークして色々やってみればいけるのでは？
+
 ## なぜこの記事を書いたのか？  
 
 NotionをヘッドレスCMSとして使いたいと思って調べても、やり方だけが書かれていて、実際の構築方法が詳しく説明されているサイトがない！  
@@ -13,8 +33,6 @@ NotionをヘッドレスCMSとして使いたいと思って調べても、や�
 本記事では、単なる手順の羅列ではなく、**なぜこの手順が必要なのか、どんな仕組みで動いているのかを含めて解説** します。  
 
 ![1000006240](https://github.com/user-attachments/assets/0309ead8-d6db-4ae4-846f-ce9bf8193e0d)
-
----
 
 ## そもそもNotionをヘッドレスCMSとして使うとは？  
 
@@ -27,8 +45,6 @@ NotionをヘッドレスCMSとして使いたいと思って調べても、や�
 
 この流れを実現すると、**Notionで記事を管理しながら、自動的にGitHubにMarkdownとして保存する** ことができます。  
 
----
-
 ## 事前準備  
 
 ### 必要なツール  
@@ -37,8 +53,6 @@ NotionをヘッドレスCMSとして使いたいと思って調べても、や�
 - **Notion API**（Notionのデータを取得する）  
 - **GitHub & GitHub Actions**（記事データをMarkdownに変換し管理する）  
 - **C#**（APIと連携するプログラムを作成）  
-
----
 
 ## 実際に構築してみよう
 
@@ -82,8 +96,6 @@ jobs:
           # C#スクリプトを実行
 ```
 
----
-
 ## C#でNotion APIと連携するコードを書く  
 
 `Program.cs` に記述するコードの概要を解説しながら書く（例）  
@@ -113,18 +125,23 @@ class Program
 
 **なぜこのコードが必要なのか、どの部分が重要なのかを解説** しながら進める。  
 
----
-
 ## まとめ  
 
 - NotionをヘッドレスCMSとして活用するメリット  
 - 実装の流れをおさらい  
 - 今後の改善点や発展的な使い方  
 
----
-
 ### 🎯 こんな人に役立つ記事  
 
 - **NotionをCMSとして使いたいが、構築方法が分からない人**  
 - **GitHub ActionsでNotionの記事を自動管理したい人**  
 - **実際に動くサンプルを試してみたい人**  
+
+## 参考資料・リンク
+
+[Notionでブログを書く | Yucchiy's Note](https://blog.yucchiy.com/2022/05/blogging-with-notion/)  
+[C#でCustom GitHub Actionを書く | Yucchiy's Note](https://blog.yucchiy.com/2022/05/implement-custom-github-action-with-csharp/)  
+
+[NotionヘッドレスCMS化記録 (3) GitHub Actionsと自動デプロイ | lacolaco's marginalia](https://blog.lacolaco.net/posts/notion-headless-cms-3/)
+
+[結局Githubに学習履歴を統一した方が諸々良かった](https://zenn.dev/bun913/articles/study-history-on-github)  
