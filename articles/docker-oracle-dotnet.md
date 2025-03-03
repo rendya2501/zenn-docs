@@ -9,32 +9,30 @@ published: false
 ## はじめに
 
 完全に個人用の勉強メモです。  
-Oracleの勉強の為に環境を立ち上げて色々いじってみようと思い立ちましたが、「ローカルの環境を汚したくなぁ」ってのと、「Dockerもついでに勉強しておくかぁ」ということで、ほぼこちらの記事([【Docker】Oracleを無料で簡単にローカルに構築する](https://zenn.dev/re24_1986/articles/29430f2f8b4b46))を参考にしつつ、躓いたところをまとめたり、立ち上げた環境に対してC#(.Net)でアクセスしてみる所までをまとめました。  
 
-<!-- --- -->
+- Oracle学習のために環境を構築したい
+- でもローカルの環境を汚したくない
+- それならDockerだよね
 
-## 環境
+ということで、こちらの記事([【Docker】Oracleを無料で簡単にローカルに構築する](https://zenn.dev/re24_1986/articles/29430f2f8b4b46))をほぼ参考にしつつ、躓いたところをまとめたり、立ち上げた環境に対してC#で簡単なCRUDプログラムを実行する所までをまとめました。  
+
+## 実行環境
 
 - Win11  
 - Docker 24.0.6, build ed223bc  
-- .NET 6  
-- VisualStudio 2022  
+- .NET 8  
+- VSCode  
 
-<!-- --- -->
-
-## Docker環境構築
+## Docker環境構築に関して
 
 Dockerの環境構築に関しては参考記事の通りに進めていけば基本的に問題はありません。  
-使用するターミナルは`git bash`以外が良いです。  
-理由は忘れました。後でちゃんと調べておきます。  
-しかし、PowerShellを使ったらあっさり解決したのは覚えています。  
 
 - リポジトリのクローン  
 - ORACLE EXPRESS EDITIONのダウンロード  
 - リポジトリにダウンロードしたOracleを配置  
 
-ここまでは手順どおりで問題ありませんが、[イメージ作成シェルの実行]は参考コードでは動きません。  
-カレントディレクトリのパス指定は`.\`ではなく`./`が正解です。  
+ここまでは手順どおりで問題ありませんが、`イメージ作成シェルの実行` は参考サイトのコマンドでは動きません。  
+カレントディレクトリのパス指定は`.\`ではなく`./`が正しいです。  
 
 ``` bash
 ./buildContainerImage.sh -v 21.3.0 -x -i
@@ -43,15 +41,13 @@ Dockerの環境構築に関しては参考記事の通りに進めていけば�
 .\buildContainerImage.sh -v 21.3.0 -x -i
 ```
 
-後は引き続き参考サイトの通りにやれば良いです。  
+後は参考サイトの通りに構築していけば良いです。  
 
 - 生成物確認
   - docker images
 - ymlファイル作成
 - コンテナ作成 & 起動
   - docker-compose up -d  
-
-<!-- --- -->
 
 ## .NETから接続してみる
 
@@ -60,6 +56,8 @@ Dockerの環境構築に関しては参考記事の通りに進めていけば�
 - ConsoleApp
 - .NET 6  
 - トップレベルステートは使用しない  
+
+`dotnet new console -f net8.0 -n DockerOracle`
 
 NuGet インストール
 
@@ -86,7 +84,7 @@ internal class Program
     static void Main(string[] args)
     {
         // 接続文字列
-        string connectionString = "User Id=sys;Password=passw0rd;Connection Timeout=0;DBA Privilege=SYSDBA;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=XEPDB1)));";
+        string connectionString = "User Id=sys;Password=passw0rd;DBA Privilege=SYSDBA;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=XEPDB1)));";
 
         // DB接続
         using OracleConnection db = new(connectionString);
@@ -132,24 +130,24 @@ public class SampleTable
 }
 ```
 
-次の接続文字列はChatGPTが一番最初に生成した物ですが、これでは接続できませんでした。  
-(エラーメッセージも残しておけばよかったです。)  
+次の接続文字列はChatGPT3時代に生成してもらった物ですが、これでは接続できませんでした。  
 
 ``` cs
-"User Id=sys;Password=passw0rd;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=XE)));";
+string connectionString = "User Id=sys;Password=passw0rd;DBA Privilege=SYSDBA;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=XEPDB1)));";
 ```
 
-試行錯誤の結果、接続文字列に`Connection Timeout=0;`と`DBA Privilege=SYSDBA;`を含めることで接続することが出来ましたが、明らかに良くない書き方なので、あくまでサンプルとして見てください。  
-なぜダメなのかも後で調べておきます。  
+エラーメッセージは次の通りです。
 
-以下、接続がうまく行かない時に参考にしたサイト群  
+``` logs
+Unhandled exception. Oracle.ManagedDataAccess.Client.OracleException (0x80004005): ORA-28009: connection as SYS should be as SYSDBA or SYSOPER
+```
 
-- [Oracle Data Provider for .NET (ODP.NET) で ORA-12154 が発生した場合の対処](https://blog.officekoma.co.jp/2017/11/oracle-data-provider-for-net-odpnet-ora.html) 
-- [Oracle.ManagedDataAccess: ORA-01882: timezone region not found' - Oracle Forums](https://forums.oracle.com/ords/apexds/post/oracle-manageddataaccess-ora-01882-timezone-region-not-foun-9972) 
-- [UseHourOffsetForUnsupportedTimezone](https://docs.oracle.com/en/database/oracle/oracle-database/21/odpnt/ConnectionUseHourOffsetForUnsupportedTimezone.html#GUID-C66B87C3-0DBB-4609-A57A-D7F9FAD79F72)
-- [Oracle.ManagedDataAccess Connection request timed out – iTecNote](https://itecnote.com/tecnote/oracle-manageddataaccess-connection-request-timed-out/)
+見た感じ権限のエラーっぽいです。  
+どうやらユーザーに `User Id=sys;` を指定すると自動的に、`SYSユーザー` としてログインすることとなり、その場合、接続文字列に`DBA Privilege=SYSDBA;`を含めなければならないようです。  
 
-<!-- --- -->
+`SYSユーザー` はデータベース管理者用の特権ユーザーであり、通常のアプリケーションで使用するのは推奨されないようです。  
+
+本来であれば、事前にユーザーを作成して、そのユーザーでログインすべきですが、今回は簡単なサンプルなのでご容赦ください。  
 
 ## 参考サイト
 
