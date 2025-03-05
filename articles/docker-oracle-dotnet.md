@@ -134,35 +134,41 @@ using Oracle.ManagedDataAccess.Client;
 string connectionString = "User Id=sys;Password=passw0rd;DBA Privilege=SYSDBA;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=XE)));";
 
 // DB接続
+Console.WriteLine("Connecting to Oracle...");
 using OracleConnection db = new(connectionString);
+Console.WriteLine("Connection successful!");
+Console.WriteLine("");
 
 // テーブルの作成または初期化
+Console.WriteLine("Create Table:");
 CreateOrTruncateTable(db);
+Console.WriteLine("Create Table successful!");
+Console.WriteLine("");
 
 // データの挿入
+Console.WriteLine("Insert Data:");
 InsertData(db, "John Doe", 30);
 InsertData(db, "Hoge Fuga", 25);
 InsertData(db, "Piyo Piyo", 20);
-
-// データの選択と表示
-Console.WriteLine("Initial Data:");
 DisplayData(db);
+Console.WriteLine("");
 
 // データの更新
 Console.WriteLine("Update Data:");
 UpdateData(db, "UPDATEEEEEEEEEEEEEEE", 35);
-
-// データの再選択と表示
 DisplayData(db);
+Console.WriteLine("");
 
 // データの削除
 Console.WriteLine("Delete Data:");
 DeleteData(db);
-
-// データの再選択と表示
 DisplayData(db);
+Console.WriteLine("");
 
-
+// テーブルの削除
+Console.WriteLine("Drop Table:");
+DropTable(db);
+Console.WriteLine("Drop Table successful!");
 
 /// <summary>
 /// テーブルの作成または初期化
@@ -243,6 +249,17 @@ void DeleteData(OracleConnection db)
     db.Execute(deleteQuery, new { ID = deleteID });
 }
 
+/// <summary>
+/// テーブルの削除
+/// </summary>
+/// <param name="db"></param>
+void DropTable(OracleConnection db)
+{
+    var createTableQuery = "DROP TABLE SampleTable";
+    db.Execute(createTableQuery);
+}
+
+
 public class SampleTable
 {
     public int Id { get; set; }
@@ -262,24 +279,33 @@ dotnet run
 以下の出力を確認できればOKです。  
 
 ``` logs
-Initial Data:
-ID: 4, Name: John Doe, Age: 30
-ID: 5, Name: Hoge Fuga, Age: 25
-ID: 6, Name: Piyo Piyo, Age: 20
-Update Data:
-ID: 4, Name: UPDATEEEEEEEEEEEEEEE, Age: 35
-ID: 5, Name: Hoge Fuga, Age: 25
-ID: 6, Name: Piyo Piyo, Age: 20
-Delete Data:
-ID: 4, Name: UPDATEEEEEEEEEEEEEEE, Age: 35
-ID: 5, Name: Hoge Fuga, Age: 25
-```
+Connecting to Oracle...
+Connection successful!
 
-因みに、何度もプログラムを実行するとIDが加算されていきます。  
+Create Table:
+Create Table successful!
+
+Insert Data:
+ID: 1, Name: John Doe, Age: 30
+ID: 2, Name: Hoge Fuga, Age: 25
+ID: 3, Name: Piyo Piyo, Age: 20
+
+Update Data:
+ID: 1, Name: UPDATEEEEEEEEEEEEEEE, Age: 35
+ID: 2, Name: Hoge Fuga, Age: 25
+ID: 3, Name: Piyo Piyo, Age: 20
+
+Delete Data:
+ID: 1, Name: UPDATEEEEEEEEEEEEEEE, Age: 35
+ID: 2, Name: Hoge Fuga, Age: 25
+
+Drop Table:
+Drop Table successful!
+```
 
 ### 接続文字列の余談
 
-以下は、ChatGPT3.○時代に生成してもらった接続文字列なのですが、これでは接続できませんでした。  
+以下は、ChatGPT3.5時代に生成してもらった接続文字列なのですが、これでは接続できませんでした。  
 
 ``` cs
 string connectionString = "User Id=sys;Password=passw0rd;DBA Privilege=SYSDBA;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=XEPDB1)));";
