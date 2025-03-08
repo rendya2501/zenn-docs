@@ -107,7 +107,7 @@ GitHub連携の際に必ず必要となります。
 | **RequestPublishing** | チェックボックス | 記事公開フラグです。これにチェックがついている記事が公開の対象となります。 |
 | **_SystemCrawledAt** | 最終更新日時 | プログラムから**RequestPublishing**フラグを操作するため、その更新日時を反映指せる為に必要となります。 |
 
-![alt text](../images/notion-headless-cms-sample/notion-database.png)
+![alt text](/images/notion-headless-cms-sample/notion-database.png)
 <!-- ![alt text](../images/notion-headless-cms-sample/notion-article1.png) -->
 
 #### 1-2. NotionAPI利用のためのインテグレーショントークンの取得
@@ -195,7 +195,7 @@ Notionの設定時にメモしておいた`インテグレーショントーク�
 初期状態は `Read repository contents and packages permissions` となっていると思いますが、これを `Read and Write permissions` に変更してください。  
 ここを変更しておかないと、GitHub Actionsを実行した時に`403`エラーとなってしまいます。  
 
-![alt text](https://github.com/rendya2501/zenn-docs/blob/main/images/notion-headless-cms-sample/github-actions-permission-error.png)
+![alt text](/images/notion-headless-cms-sample/github-actions-permission-error.png)
 
 - **Read and Write permissions(読み取りと書き込みの権限)**  
 ワークフローには、すべてのスコープに対してリポジトリへの読み取りと書き込みの権限があります。  
@@ -1043,20 +1043,20 @@ jobs:
 
 まずNotionのデータベースがありまして、  
 
-![alt text](../images/notion-headless-cms-sample/notion-database.png)
+![alt text](/images/notion-headless-cms-sample/notion-database.png)
 
 こんな感じの記事を書いたとします。  
 
-![alt text](../images/notion-headless-cms-sample/notion-article1.png)
-![alt text](../images/notion-headless-cms-sample/notion-article2.png)
+![alt text](/images/notion-headless-cms-sample/notion-article1.png)
+![alt text](/images/notion-headless-cms-sample/notion-article2.png)
 
 GitHub Actionsを実行しまして、
 
-![alt text](../images/notion-headless-cms-sample/github-actions-demo.png)
+![alt text](/images/notion-headless-cms-sample/github-actions-demo.png)
 
 それが成功するとNotionの記事がマークダウンとして生成され、GitHubに草が生えます。  
 
-![alt text](../images/notion-headless-cms-sample/github-article-demo.png)
+![alt text](/images/notion-headless-cms-sample/github-article-demo.png)
 
 ## 参考・リンク
 
