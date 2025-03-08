@@ -1052,9 +1052,10 @@ GitHub Actionsを実行しまして、
 [C#でCustom GitHub Actionを書く | Yucchiy's Note](https://blog.yucchiy.com/2022/05/implement-custom-github-action-with-csharp/)  
 https://github.com/yucchiy/notion-to-markdown  
 
-[NotionヘッドレスCMS化記録 (3) GitHub Actionsと自動デプロイ | lacolaco's marginalia](https://blog.lacolaco.net/posts/notion-headless-cms-3/)  
+<!-- NotionヘッドレスCMS化記録 (3) GitHub Actionsと自動デプロイ | lacolaco's marginalia -->
 https://blog.lacolaco.net/posts/notion-headless-cms-3/  
 
+<!-- 結局Githubに学習履歴を統一した方が諸々良かった -->
 https://zenn.dev/bun913/articles/study-history-on-github   
 
 ## リポジトリ
