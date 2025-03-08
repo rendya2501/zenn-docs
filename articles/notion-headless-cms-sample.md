@@ -62,7 +62,7 @@ AIの回答をそのまま引用しておきます。
 
 1. 自分が一番得意な言語だから  
 2. この実装の核となる変換スクリプトの大本がC#で実装されていたから  
-https://github.com/yucchiy/notion-to-markdown
+https://github.com/yucchiy/notion-to-markdown  
 
 正直、このリポジトリが無かったら実装出来ていませんでした。  
 本サンプルは、こちらのリポジトリを `.Net8`に対応させたのと細かい部分を自分なりにアレンジした物となります。  
@@ -1052,9 +1052,10 @@ GitHub Actionsを実行しまして、
 [C#でCustom GitHub Actionを書く | Yucchiy's Note](https://blog.yucchiy.com/2022/05/implement-custom-github-action-with-csharp/)  
 https://github.com/yucchiy/notion-to-markdown  
 
-[NotionヘッドレスCMS化記録 (3) GitHub Actionsと自動デプロイ | lacolaco's marginalia](https://blog.lacolaco.net/posts/notion-headless-cms-3/)
+[NotionヘッドレスCMS化記録 (3) GitHub Actionsと自動デプロイ | lacolaco's marginalia](https://blog.lacolaco.net/posts/notion-headless-cms-3/)  
+https://blog.lacolaco.net/posts/notion-headless-cms-3/  
 
-https://zenn.dev/bun913/articles/study-history-on-github 
+https://zenn.dev/bun913/articles/study-history-on-github   
 
 ## リポジトリ
 
