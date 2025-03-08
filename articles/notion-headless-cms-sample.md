@@ -62,7 +62,7 @@ AIの回答をそのまま引用しておきます。
 
 1. 自分が一番得意な言語だから  
 2. この実装の核となる変換スクリプトの大本がC#で実装されていたから  
-[yucchiy/notion-to-markdown](https://github.com/yucchiy/notion-to-markdown)  
+https://github.com/yucchiy/notion-to-markdown
 
 正直、このリポジトリが無かったら実装出来ていませんでした。  
 本サンプルは、こちらのリポジトリを `.Net8`に対応させたのと細かい部分を自分なりにアレンジした物となります。  
@@ -215,11 +215,10 @@ notion-headless-cms-sample/
 │   └── NotionToMarkdown.csproj
 ```
 
-各ファイルの内容は[サンプルリポジトリ](https://github.com/rendya2501/notion-headless-cms-sample/tree/main/src)からコピペしてください。  
+各ファイルの内容はサンプルリポジトリからコピペしてください。  
+https://github.com/rendya2501/notion-headless-cms-sample/tree/main/src  
 
-一番の肝は、`Program.cs`ですが、それなりにコメントを書いたので、気になる方は参照してください。  
-
-一応、dotnetコマンドでプロジェクトを作成するに必要なコマンド操作も載せておきます。  
+一応、`dotnet` コマンドでプロジェクトを作成する手順も載せておきます。  
 
 - プロジェクトの作成  
 
@@ -1051,11 +1050,11 @@ GitHub Actionsを実行しまして、
 
 [Notionでブログを書く | Yucchiy's Note](https://blog.yucchiy.com/2022/05/blogging-with-notion/)  
 [C#でCustom GitHub Actionを書く | Yucchiy's Note](https://blog.yucchiy.com/2022/05/implement-custom-github-action-with-csharp/)  
-[yucchiy/notion-to-markdown](https://github.com/yucchiy/notion-to-markdown)  
+https://github.com/yucchiy/notion-to-markdown  
 
 [NotionヘッドレスCMS化記録 (3) GitHub Actionsと自動デプロイ | lacolaco's marginalia](https://blog.lacolaco.net/posts/notion-headless-cms-3/)
 
-[結局Githubに学習履歴を統一した方が諸々良かった](https://zenn.dev/bun913/articles/study-history-on-github)  
+https://zenn.dev/bun913/articles/study-history-on-github 
 
 ## リポジトリ
 
