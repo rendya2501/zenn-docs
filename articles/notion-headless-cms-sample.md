@@ -112,16 +112,16 @@ GitHub連携の際に必ず必要となります。
 
 #### 1-2. NotionAPI利用のためのインテグレーショントークンの取得
 
+こちらの記事を参考に`インテグレーショントークン`なるものを取得してください。  
 <!-- Notion APIのインテグレーショントークン -->
 https://programming-zero.net/notion-api-setting/  
-こちらの記事を参考に`インテグレーショントークン`なるものを取得してください。  
 `GitHub Actions` の `Seacrets` で使うのでメモしておいてください。  
 <!-- こちらの記事([Notion APIのインテグレーショントークン](https://programming-zero.net/notion-api-setting/))を参考に`インテグレーショントークン`なるものを取得してください。   -->
 #### 1-3. Notion Database ID の取得
 
-https://note.com/amatyrain/n/nb9ebe31dfab7  
-<!-- 同じくこちらの記事([【Notion】データベースIDを確認しよう｜あまてぃ](https://note.com/amatyrain/n/nb9ebe31dfab7))を参考にデータベースIDを取得してください。   -->
 `Notion Database ID` はこちらの記事を参考に取得してください。  
+<!--【Notion】データベースIDを確認しよう｜あまてぃ  -->
+https://note.com/amatyrain/n/nb9ebe31dfab7  
 
 こちらは簡単なのでそのまま引用させて頂きます。  
 >③URLからデータベースIDを確認
@@ -165,7 +165,9 @@ notion-headless-cms-sample/
 
 #### 2-2. リポジトリのシークレットに登録
 
-こちらの記事([GitHub Actions のシークレット情報と変数の設定方法 #GitHubActions - Qiita](https://qiita.com/mkin/items/75a4928a1fafe5eacd17))を参考にしながら設定すると分かりやすいと思います。  
+こちらの記事を参考にしながら設定すると分かりやすいと思います。
+<!-- GitHub Actions のシークレット情報と変数の設定方法 #GitHubActions - Qiita -->
+https://qiita.com/mkin/items/75a4928a1fafe5eacd17  
 
 - `リポジトリのSettingsタブ`
 - `Secrets and variablesのアコーディオン内のActions`  
@@ -193,7 +195,7 @@ Notionの設定時にメモしておいた`インテグレーショントーク�
 初期状態は `Read repository contents and packages permissions` となっていると思いますが、これを `Read and Write permissions` に変更してください。  
 ここを変更しておかないと、GitHub Actionsを実行した時に`403`エラーとなってしまいます。  
 
-![alt text](../images/notion-headless-cms-sample/github-actions-permission-error.png)
+![alt text](https://github.com/rendya2501/zenn-docs/blob/main/images/notion-headless-cms-sample/github-actions-permission-error.png)
 
 - **Read and Write permissions(読み取りと書き込みの権限)**  
 ワークフローには、すべてのスコープに対してリポジトリへの読み取りと書き込みの権限があります。  
@@ -239,13 +241,18 @@ dotnet add package Notion.Net --version 4.2.0
 dotnet add package Scriban --version 5.12.1
 ```
 
+**Notion.Net**  
+Notion APIを利用するためのC#ライブラリで、Notionのデータベースやページにアクセスして操作することができます。  
+**Scriban**  
+高速で柔軟なテンプレートエンジンで、テンプレートを使って文字列を生成するのに役立ちます。  
+
 - ignoreファイルの作成  
 
 ``` bash
 dotnet new gitignore
 ```
 
-- Program.csのコピペ
+- Program.csをコピペ
 
 :::details Program.cs
 
