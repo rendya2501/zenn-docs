@@ -62,7 +62,8 @@ AIの回答をそのまま引用しておきます。
 
 1. 自分が一番得意な言語だから  
 2. この実装の核となる変換スクリプトの大本がC#で実装されていたから  
-   https://github.com/yucchiy/notion-to-markdown  
+
+https://github.com/yucchiy/notion-to-markdown  
 
 正直、このリポジトリが無かったら実装出来ていませんでした。  
 本サンプルは、こちらのリポジトリを `.Net8`に対応させたのと細かい部分を自分なりにアレンジした物となります。  
@@ -111,7 +112,10 @@ GitHub連携の際に必ず必要となります。
 
 #### 1-2. NotionAPI利用のためのインテグレーショントークンの取得
 
-こちらの記事([Notion APIのインテグレーショントークン](https://programming-zero.net/notion-api-setting/))を参考に`インテグレーショントークン`なるものを取得してください。  
+https://programming-zero.net/notion-api-setting/
+
+<!-- こちらの記事([Notion APIのインテグレーショントークン](https://programming-zero.net/notion-api-setting/))を参考に`インテグレーショントークン`なるものを取得してください。   -->
+こちらの記事を参考に`インテグレーショントークン`なるものを取得してください。  
 `GitHub Actions` の `Seacrets` で使うのでメモしておいてください。  
 
 #### 1-3. Notion Database ID の取得
