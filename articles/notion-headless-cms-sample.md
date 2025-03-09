@@ -73,14 +73,14 @@ https://github.com/yucchiy/notion-to-markdown
 
 実装は以下の5ステップで進めます。  
 
-1. Notionの設定  
-   1. Notionデータベースを作成 & プロパティの設定  
-   2. NotionAPI利用のためのIntegration Tokenの取得  
-   3. Notion Database ID の取得  
-2. GitHubリポジトリの設定  
-   1. リポジトリの作成とプロジェクト構成  
-   2. リポジトリのシークレットに登録  
-   3. リポジトリのpermissionsの設定  
+1. **Notionの設定**  
+   - **1-1.** Notionデータベースを作成 & プロパティの設定  
+   - **1-2.** NotionAPI利用のためのIntegration Tokenの取得  
+   - **1-3.** Notion Database ID の取得  
+2. **GitHubリポジトリの設定**  
+   - **2-1.** リポジトリの作成とプロジェクト構成  
+   - **2-2.** リポジトリのシークレットに登録  
+   - **2-3.** リポジトリのpermissionsの設定  
 3. C#プロジェクトの作成  
 4. GitHub Actionsのワークフローファイルの作成  
 5. GitHubにPush  
@@ -115,14 +115,14 @@ https://periodic-cheese-dfa.notion.site/19e4a91b2eac80928ca1ca4acaa42933?v=19e4a
 
 #### 1-2. NotionAPI利用のためのIntegration Tokenの取得
 
-こちらの記事を参考に`Integration Token`なるものを取得してください。  
+こちらの記事を参考に**Integration Token**なるものを取得してください。  
 <!-- Notion APIのインテグレーショントークン -->
 https://programming-zero.net/notion-api-setting/  
 `GitHub Actions` の `Seacrets` で使うのでメモしておいてください。  
 
 #### 1-3. Notion Database ID の取得
 
-`Notion Database ID` はこちらの記事を参考に取得してください。  
+**Notion Database ID** はこちらの記事を参考に取得してください。  
 <!--【Notion】データベースIDを確認しよう｜あまてぃ  -->
 https://note.com/amatyrain/n/nb9ebe31dfab7  
 
@@ -307,11 +307,11 @@ https://github.com/rendya2501/notion-headless-cms-sample/blob/main/.github/workf
 
 ## デモ
 
-Test1(Fuga),Test2(Piyo),Test4を公開対象とします。  
+`Test1(Fuga)`、`Test2(Piyo)`、`Test4`を公開対象とします。  
 
 ![alt text](/images/notion-headless-cms-sample/selected.png)
 
-Test1の記事の内容は以下の通りです。  
+`Test1`の記事の内容は以下の通りです。  
 
 ![alt text](/images/notion-headless-cms-sample/article.png)
 
@@ -320,11 +320,13 @@ GitHub Actionsを実行します。
 ![alt text](/images/notion-headless-cms-sample/run-workflow.png)
 
 GitHub Actionsが成功するとNotionの記事がマークダウンとして生成され、GitHubに草が生えます。  
-表示されている記事はTest1(Fuga)の物である事が分かります。  
-他、Test2(Piyo),Test4の記事が生成されている事が確認出来ると思います。  
+画像の記事は`Test1(Fuga)`の物である事が分かると思います。  
+また、ディレクトリツリーより`Test2(Piyo)`、`Test4`の記事も生成されている事が確認出来ると思います。  
 
 ![alt text](/images/notion-headless-cms-sample/github-article-demo.png)
 ![alt text](/images/notion-headless-cms-sample/selected.png)  
+
+こちらのサンプルではこれが精一杯ですが、これをベースに自分なりにアレンジしてみるのも良いかもしれません。  
 
 ## 参考サイト
 
