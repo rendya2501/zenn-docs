@@ -74,7 +74,7 @@ https://github.com/yucchiy/notion-to-markdown
 
 1. Notionの設定  
    1. Notionデータベースを作成&プロパティの設定  
-   2. NotionAPI利用のためのインテグレーショントークンの取得
+   2. NotionAPI利用のためのIntegration Tokenの取得
    3. Notion Database ID の取得
 2. GitHubリポジトリの設定
    1. リポジトリの作成とプロジェクト構成
@@ -111,9 +111,9 @@ GitHub連携の際に必ず必要となります。
 
 ![alt text](/images/notion-headless-cms-sample/notion-database.png)
 
-#### 1-2. NotionAPI利用のためのインテグレーショントークンの取得
+#### 1-2. NotionAPI利用のためのIntegration Tokenの取得
 
-こちらの記事を参考に`インテグレーショントークン`なるものを取得してください。  
+こちらの記事を参考に`Integration Token`なるものを取得してください。  
 <!-- Notion APIのインテグレーショントークン -->
 https://programming-zero.net/notion-api-setting/  
 `GitHub Actions` の `Seacrets` で使うのでメモしておいてください。  
@@ -167,13 +167,13 @@ https://qiita.com/mkin/items/75a4928a1fafe5eacd17
 
 **リポジトリのSettingsタブ** → **Secrets and variablesのアコーディオン内のActions** → **New repository secret** ボタンを押下  
 
-Notionの設定時にメモしておいた`インテグレーショントークン`と`Notion Database ID`を登録してください。  
+Notionの設定時にメモしておいた`Integration Token`と`Notion Database ID`を登録してください。  
 `メールアドレス`と`ユーザー名`に関してはGitHub Actionsを実行した時に草を生やすために必要です。  
 
 | 変数名 | 格納する値 |
 |---|---|
-| **NOTION_AUTH_TOKEN** | `1-2.` で取得した **Notion APIのインテグレーショントークン** |
-| **NOTION_DATABASE_ID** | `1-3.` で取得した **Notion Database ID** |
+| **NOTION_AUTH_TOKEN** | **1-2.** でメモしておいた **Integration Token** |
+| **NOTION_DATABASE_ID** | **1-3.** でメモしておいた **Notion Database ID** |
 | **USER_EMAIL** | githubに登録しているメールアドレス |
 | **USER_NAME** | githubのユーザー名 |
 
@@ -226,8 +226,7 @@ notion-headless-cms-sample/
 #### 1. 各ファイルを手動で作成&コピペで進める方法  
 
 項目名の通りです。  
-
-`src`ディレクトリを作成します。
+`src`ディレクトリを作成して、その中にファイルを作成して行きます。  
 
 `NotionToMarkdown.csproj`という名前でファイルを作成して、次のコードをコピペしてください。  
 https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/NotionToMarkdown.csproj  
@@ -239,12 +238,12 @@ https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/Program.c
 https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/.gitignore  
 
 <!-- https://github.com/rendya2501/notion-headless-cms-sample/tree/main/src -->
+手動で勧める方法は以上となります。  
 
-#### 2. dotnetコマンドで進める方法
+#### 2. dotnet コマンドで進める方法
 
 `dotnet` コマンドで作業を行う手順も載せておきます。  
-
-※事前に`.NET SDK`をインストールしておいてください。  
+※ローカルで作業する場合、`.NET SDK`をインストールしておいてください。  
 
 - **プロジェクトの作成**  
 
@@ -252,7 +251,7 @@ https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/.gitignor
   dotnet new console -f net8.0 -o src -n NotionToMarkdown
   ```
 
-  バージョンは.net8で、プロジェクトファイルの出力先は`src`ディレクトリ、プロジェクト名は`NotionToMarkdown`のコンソールプロジェクトを作成する。  
+  バージョンは `.net8` で、プロジェクトファイルの出力先は`src`ディレクトリ、プロジェクト名は`NotionToMarkdown`でコンソールプロジェクトを作成する。  
 
 - **依存関係の追加**  
 
@@ -283,7 +282,7 @@ https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/Program.c
 
 ### 4. GitHub Actionsのワークフローファイルの作成  
 
-GitHub Actionsを実行するためのワークフローファイル(`yml`)を作成していきます。  
+GitHub Actionsを実行するためのワークフローファイルを作成していきます。  
 `.github/workflows`ディレクトリを作成し、その中に`workflow.yml`ファイルを作成してください。  
 
 ``` txt
@@ -295,7 +294,6 @@ notion-headless-cms-sample/
 
 ファイルの内容は次の通りです。  
 `workflow.yml`ファイルにコピペしてください。  
-
 https://github.com/rendya2501/notion-headless-cms-sample/blob/main/.github/workflows/workflow.yml
 
 ### 5. GitHubにPush
