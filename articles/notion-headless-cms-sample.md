@@ -8,7 +8,7 @@ published: false
 
 ## 概要
 
-この記事では、NotionをヘッドレスCMSとして活用し、GitHub Actionsを用いてNotionのデータをMarkdown化し、自動でGitHubに反映させる仕組みを紹介します。  
+本記事では、NotionをヘッドレスCMSとして活用し、GitHub Actionsを用いてNotionのデータをMarkdownに変換し、自動でGitHubへ反映させる仕組みを紹介します。  
 
 ## 背景
 
@@ -34,8 +34,8 @@ GitHub Actions の yml設定やスクリプトを紹介する記事は多くあ�
 
 ## ヘッドレスCMS
 
-このようなシステムを **ヘッドレスCMS** と言うらしいです。  
-先人たちがそのように紹介していたので、自分も同じように使わせて貰います。  
+この仕組みは「**ヘッドレスCMS**」に分類される様です。  
+既存の事例を参考にしつつ、本記事でも同様の用語を使用します。  
 
 参考記事:  
 <!-- NotionヘッドレスCMS化記録 (3) GitHub Actionsと自動デプロイ | lacolaco's marginalia -->
@@ -58,31 +58,31 @@ AIに聞いてみたところ、以下のような回答をしてくれました
 - フレームワーク: .NET 8
 - ツール: VSCode, GitHub Actions
 
-実装言語はC#です。理由は2つあります。  
+実装にはC#を採用しました。理由は以下の2点です。  
 
-1. 自分が一番得意な言語だから  
-2. C#で実装されている変換スクリプトがあったから  
+- 最も得意な言語であるため、スムーズに開発できる  
+- 既存のC#製の変換スクリプトがあり、それを活用できるため  
 
 https://github.com/yucchiy/notion-to-markdown  
 
 正直、このリポジトリが無かったら実装出来ていませんでした。  
-本サンプルは、こちらで公開されているC#プロジェクトを `.Net8` に対応させたのと、細かい部分を自分なりにアレンジした物となります。  
+本サンプルは、こちらで公開されているC#プロジェクトを `.Net8` に対応させたのと、細かい部分を私なりにアレンジした物となります。  
 
 ## 実装・解説
 
-以下の手順で実装していきます。  
+実装は以下の5ステップで進めます。  
 
 1. Notionの設定  
-   1. Notionデータベースを作成&プロパティの設定  
-   2. NotionAPI利用のためのIntegration Tokenの取得
-   3. Notion Database ID の取得
-2. GitHubリポジトリの設定
-   1. リポジトリの作成とプロジェクト構成
-   2. リポジトリのシークレットに登録
-   3. リポジトリのpermissionsの設定
+   1. Notionデータベースを作成 & プロパティの設定  
+   2. NotionAPI利用のためのIntegration Tokenの取得  
+   3. Notion Database ID の取得  
+2. GitHubリポジトリの設定  
+   1. リポジトリの作成とプロジェクト構成  
+   2. リポジトリのシークレットに登録  
+   3. リポジトリのpermissionsの設定  
 3. C#プロジェクトの作成  
 4. GitHub Actionsのワークフローファイルの作成  
-5. GitHubにPush
+5. GitHubにPush  
 
 ### 1. Notionの設定
 
@@ -90,26 +90,25 @@ https://github.com/yucchiy/notion-to-markdown
 
 まずはNotionで記事管理用のデータベースを作成します。  
 
-フルページでデータベースを作成してください。  
-データベース名は何でも構いません。  
-※自分はサンプルとして `notion-headless-cms-sample-database` としました。  
+フルページでデータベースを作成してください。データベース名は何でも構いません。  
+※今回はサンプルとして `notion-headless-cms-sample-database` としました。  
 
 次にプロパティを設定していきます。  
-以下のプロパティを追加してください。  
-GitHub連携の際に必ず必要となります。  
+以下のプロパティを追加してください。GitHub連携の際に必ず必要となります。  
 
 | プロパティ | プロパティの種類 | 用途 |
 |---|---|---|
-| **Title** | タイトル | 記事本体のタイトル名です。ヘッダー情報に含めます。 |
+| **Title** | タイトル | 記事のタイトル名です。ヘッダー情報になります。 |
 | **Slug** | テキスト | GitHubで記事のディレクトリ名になります。指定しない場合はタイトルがディレクトリ名となります。 |
-| **Type** | セレクト | Zennのように記事が`Idea`か`Tech`なのかを示します。ヘッダー情報に含めます。 |
-| **Tags** | マルチセレクト | 技術スタック等を選択するものです。ヘッダー情報に含めます。 |
-| **Description** | テキスト | 記事の説明です。指定しない場合はタイトルがディレクトリ名となります。 |
-| **RequestPublishing** | チェックボックス | 記事公開フラグです。これにチェックがついている記事が公開の対象となります。 |
-| **PublishedAt** | 作成日時 | 記事を作成した日時です。ヘッダー情報に含めます。 |
+| **Type** | セレクト | Zennのように記事が`Idea`か`Tech`なのかを示します。ヘッダー情報になります。 |
+| **Tags** | マルチセレクト | 技術スタック等を選択するものです。ヘッダー情報になります。 |
+| **Description** | テキスト | 記事の説明です。 |
+| **RequestPublishing** | チェックボックス | 記事公開フラグです。チェックがついている記事が公開の対象となります。 |
+| **PublishedAt** | 作成日時 | 記事を作成した日時です。ヘッダー情報になります。 |
 | **_SystemCrawledAt** | 最終更新日時 | プログラムからデータベースを操作するため、更新日時を反映させる為に必要となります。 |
 
-![alt text](/images/notion-headless-cms-sample/notion-database.png)
+![alt text](/images/notion-headless-cms-sample/notion-database.png)  
+https://periodic-cheese-dfa.notion.site/19e4a91b2eac80928ca1ca4acaa42933?v=19e4a91b2eac817b8c51000cd6f66e99  
 
 #### 1-2. NotionAPI利用のためのIntegration Tokenの取得
 
@@ -136,7 +135,7 @@ https://note.com/amatyrain/n/nb9ebe31dfab7
 #### 2-1. リポジトリの作成とプロジェクト構成
 
 新規でリポジトリを作成してください。リポジトリ名は何でも構いません。  
-※自分はサンプルとして `notion-headless-cms-sample` としました。  
+※今回はサンプルとして `notion-headless-cms-sample` としました。  
 
 ここでプロジェクト構成について確認しておきます。  
 今後の作業において、以下のようなプロジェクト構成でサンプルを作成していきます。  
@@ -165,15 +164,15 @@ notion-headless-cms-sample/
 <!-- GitHub Actions のシークレット情報と変数の設定方法 #GitHubActions - Qiita -->
 https://qiita.com/mkin/items/75a4928a1fafe5eacd17  
 
-**リポジトリのSettingsタブ** → **Secrets and variablesのアコーディオン内のActions** → **New repository secret** ボタンを押下  
+- **リポジトリのSettingsタブ** → **Secrets and variablesのアコーディオン内のActions** → **New repository secret** ボタンを押下  
 
-Notionの設定時にメモしておいた`Integration Token`と`Notion Database ID`を登録してください。  
-`メールアドレス`と`ユーザー名`に関してはGitHub Actionsを実行した時に草を生やすために必要です。  
+Notionの設定時にメモしておいた「**Integration Token**」と「**Notion Database ID**」を登録してください。  
+メールアドレスとユーザー名に関してはGitHub Actionsを実行した時に草を生やすために必要です。  
 
 | 変数名 | 格納する値 |
 |---|---|
-| **NOTION_AUTH_TOKEN** | **1-2.** でメモしておいた **Integration Token** |
-| **NOTION_DATABASE_ID** | **1-3.** でメモしておいた **Notion Database ID** |
+| **NOTION_AUTH_TOKEN** | 1-2.でメモしておいた **Integration Token** |
+| **NOTION_DATABASE_ID** | 1-3.でメモしておいた **Notion Database ID** |
 | **USER_EMAIL** | githubに登録しているメールアドレス |
 | **USER_NAME** | githubのユーザー名 |
 
@@ -181,9 +180,9 @@ Notionの設定時にメモしておいた`Integration Token`と`Notion Database
 
 次にリポジトリの`Workflow permissions`を設定していきます。  
 
-**リポジトリのSettingsタブ** → **Actionsのアコーディオン内のGeneral** → **Workflow permissions** のラジオボタンを確認 → **Read and Write permissions** に変更
+- **リポジトリのSettingsタブ** → **Actionsのアコーディオン内のGeneral** → **Workflow permissions** のラジオボタンを確認 → **Read and Write permissions** に変更
 
-初期状態は **Read repository contents and packages permissions** となっていると思いますが、これを **Read and Write permissions** に変更してください。  
+初期状態は 「**Read repository contents and packages permissions**」 となっていると思いますが、これを 「**Read and Write permissions**」 に変更してください。  
 ここを変更しておかないと、GitHub Actionsを実行した時に`403`エラーとなってしまいます。  
 
 ![alt text](/images/notion-headless-cms-sample/github-actions-permission-error.png)
@@ -238,7 +237,7 @@ https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/Program.c
 https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/.gitignore  
 
 <!-- https://github.com/rendya2501/notion-headless-cms-sample/tree/main/src -->
-手動で勧める方法は以上となります。  
+手動で進める方法は以上となります。  
 
 #### 2. dotnet コマンドで進める方法
 
@@ -305,22 +304,24 @@ https://github.com/rendya2501/notion-headless-cms-sample/blob/main/.github/workf
 
 ## デモ
 
-次のようなNotionのデータベースがありまして、  
+Test1(Fuga),Test2(Piyo),Test4を公開対象とします。  
 
-![alt text](/images/notion-headless-cms-sample/notion-database.png)
+![alt text](/images/notion-headless-cms-sample/selected.png)
 
-こんな感じの記事を書いたとします。  
+Test1の記事の内容は以下の通りです。  
 
-![alt text](/images/notion-headless-cms-sample/notion-article1.png)
-![alt text](/images/notion-headless-cms-sample/notion-article2.png)
+![alt text](/images/notion-headless-cms-sample/article.png)
 
 GitHub Actionsを実行します。  
 
 ![alt text](/images/notion-headless-cms-sample/run-workflow.png)
 
-成功するとNotionの記事がマークダウンとして生成され、GitHubに草が生えます。  
+GitHub Actionsが成功するとNotionの記事がマークダウンとして生成され、GitHubに草が生えます。  
+表示されている記事はTest1(Fuga)の物である事が分かります。  
+他、Test2(Piyo),Test4の記事が生成されている事が確認出来ると思います。  
 
 ![alt text](/images/notion-headless-cms-sample/github-article-demo.png)
+![alt text](/images/notion-headless-cms-sample/selected.png)  
 
 ## 参考サイト
 
@@ -346,4 +347,4 @@ https://zenn.dev/bun913/articles/study-history-on-github
 
 https://github.com/rendya2501/notion-headless-cms-sample
 
-https://periodic-cheese-dfa.notion.site/19e4a91b2eac80928ca1ca4acaa42933?v=19e4a91b2eac817b8c51000cd6f66e99
+https://periodic-cheese-dfa.notion.site/19e4a91b2eac80928ca1ca4acaa42933?v=19e4a91b2eac817b8c51000cd6f66e99  
