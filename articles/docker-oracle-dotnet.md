@@ -111,7 +111,7 @@ dotnet add package Oracle.ManagedDataAccess.Core
 ### gitignore
 
 飛ばしても良い作業ですが、GitHubに上げるなら作っておいた方が良いです。  
-`obj`や`bin`フォルダを追跡対象から除外します。  
+`obj`や`bin`フォルダをgitの追跡対象から除外します。  
 
 ``` bash
 dotnet new gitignore
