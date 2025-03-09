@@ -81,6 +81,7 @@ https://github.com/yucchiy/notion-to-markdown
    3. リポジトリのpermissionsの設定
 3. C#プロジェクトの作成  
 4. GitHub Actionsのワークフローファイルの作成  
+5. 仕上げ
 
 ### 1. Notionの設定
 
@@ -100,10 +101,11 @@ GitHub連携の際に必ず必要となります。
 |---|---|---|
 | **Title** | タイトル | 記事本体のタイトル名です。ヘッダー情報に含めます。 |
 | **Slug** | テキスト | GitHubで記事のディレクトリ名になります。指定しない場合はタイトルがディレクトリ名となります。 |
-| **PublishedAt** | 作成日時 | 記事を作成した日時です。ヘッダー情報に含めます。 |
 | **Type** | セレクト | Zennのように記事が`Idea`か`Tech`なのかを示します。ヘッダー情報に含めます。 |
 | **Tags** | マルチセレクト | 技術スタック等を選択するものです。ヘッダー情報に含めます。 |
+| **Description** | テキスト | 記事の説明です。指定しない場合はタイトルがディレクトリ名となります。 |
 | **RequestPublishing** | チェックボックス | 記事公開フラグです。これにチェックがついている記事が公開の対象となります。 |
+| **PublishedAt** | 作成日時 | 記事を作成した日時です。ヘッダー情報に含めます。 |
 | **_SystemCrawledAt** | 最終更新日時 | プログラムからデータベースを操作するため、更新日時を反映させる為に必要となります。 |
 
 ![alt text](/images/notion-headless-cms-sample/notion-database.png)
@@ -138,10 +140,6 @@ https://note.com/amatyrain/n/nb9ebe31dfab7
 ここでプロジェクト構成について確認しておきます。  
 今後の作業において、以下のようなプロジェクト構成でサンプルを作成していきます。  
 
-後、このタイミングで `articles` ディレクトリを作成して `.keep` ファイルを作成しておいてください。  
-`articles` ディレクトリを追跡対象とする為にダミーファイルを作成します。  
-※`articles` ディレクトリが存在しないとマークダウンファイルが生成されません…
-
 ``` txt
 notion-headless-cms-sample/
 ├── .github/
@@ -167,9 +165,7 @@ notion-headless-cms-sample/
 <!-- GitHub Actions のシークレット情報と変数の設定方法 #GitHubActions - Qiita -->
 https://qiita.com/mkin/items/75a4928a1fafe5eacd17  
 
-- `リポジトリのSettingsタブ`
-- `Secrets and variablesのアコーディオン内のActions`  
-- `New repository secret` ボタンを押下  
+**リポジトリのSettingsタブ** → **Secrets and variablesのアコーディオン内のActions** → **New repository secret** ボタンを押下  
 
 Notionの設定時にメモしておいた`インテグレーショントークン`と`Notion Database ID`を登録してください。  
 `メールアドレス`と`ユーザー名`に関してはGitHub Actionsを実行した時に草を生やすために必要です。  
@@ -185,12 +181,9 @@ Notionの設定時にメモしておいた`インテグレーショントーク�
 
 次にリポジトリの`Workflow permissions`を設定していきます。  
 
-- `リポジトリのSettingsタブ`  
-- `Actionsのアコーディオン内のGeneral`  
-- `Workflow permissions` のラジオボタンを確認  
-- `Read and Write permissions` に変更
+**リポジトリのSettingsタブ** → **Actionsのアコーディオン内のGeneral** → **Workflow permissions** のラジオボタンを確認 → **Read and Write permissions** に変更
 
-初期状態は `Read repository contents and packages permissions` となっていると思いますが、これを `Read and Write permissions` に変更してください。  
+初期状態は **Read repository contents and packages permissions** となっていると思いますが、これを **Read and Write permissions** に変更してください。  
 ここを変更しておかないと、GitHub Actionsを実行した時に`403`エラーとなってしまいます。  
 
 ![alt text](/images/notion-headless-cms-sample/github-actions-permission-error.png)
@@ -267,7 +260,6 @@ https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/.gitignor
   dotnet new gitignore
   ```
 
-  飛ばしても良い作業ですが、GitHubに上げるなら作っておいた方が良いです。  
   `obj`や`bin`フォルダをgitの追跡対象から除外します。  
 
 - **Program.csの内容をリポジトリからコピペ**
@@ -289,6 +281,9 @@ notion-headless-cms-sample/
 ファイルの内容は次の通りです。  
 `workflow.yml`ファイルにコピペしてください。  
 
+https://github.com/rendya2501/notion-headless-cms-sample/blob/main/.github/workflows/workflow.yml
+
+<!-- 
 :::details workflow.yml
 
 ```yml
@@ -352,7 +347,12 @@ jobs:
           git push
 ```
 
-:::
+::: -->
+
+### 5. 仕上げ
+
+最後に `articles` ディレクトリを作成して `.keep` ファイルを作成してください。  
+`articles` ディレクトリが存在しないとマークダウンファイルが生成されないため、gitの追跡対象とする為にダミーファイルを作成します。  
 
 ## デモ
 
@@ -396,3 +396,5 @@ https://zenn.dev/bun913/articles/study-history-on-github
 参考にしてください。  
 
 https://github.com/rendya2501/notion-headless-cms-sample
+
+https://periodic-cheese-dfa.notion.site/19e4a91b2eac80928ca1ca4acaa42933?v=19e4a91b2eac817b8c51000cd6f66e99
