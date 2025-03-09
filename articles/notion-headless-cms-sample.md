@@ -3,7 +3,7 @@ title: "Notionを使ったヘッドレスCMSの構築方法"
 emoji: "📑"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["csharp","Notion","GitHubActions"]
-published: false
+published: true
 ---
 
 ## 概要
@@ -63,6 +63,7 @@ AIに聞いてみたところ、以下のような回答をしてくれました
 - 最も得意な言語であるため、スムーズに開発できる  
 - 既存のC#製の変換スクリプトがあり、それを活用できるため  
 
+参考リポジトリ:  
 https://github.com/yucchiy/notion-to-markdown  
 
 正直、このリポジトリが無かったら実装出来ていませんでした。  
@@ -108,6 +109,8 @@ https://github.com/yucchiy/notion-to-markdown
 | **_SystemCrawledAt** | 最終更新日時 | プログラムからデータベースを操作するため、更新日時を反映させる為に必要となります。 |
 
 ![alt text](/images/notion-headless-cms-sample/notion-database.png)  
+
+サンプルNotionページ:  
 https://periodic-cheese-dfa.notion.site/19e4a91b2eac80928ca1ca4acaa42933?v=19e4a91b2eac817b8c51000cd6f66e99  
 
 #### 1-2. NotionAPI利用のためのIntegration Tokenの取得
@@ -180,7 +183,7 @@ Notionの設定時にメモしておいた「**Integration Token**」と「**Not
 
 次にリポジトリの`Workflow permissions`を設定していきます。  
 
-- **リポジトリのSettingsタブ** → **Actionsのアコーディオン内のGeneral** → **Workflow permissions** のラジオボタンを確認 → **Read and Write permissions** に変更
+- **リポジトリのSettingsタブ** → **Actionsのアコーディオン内のGeneral** → **Workflow permissions** のラジオボタンを確認 → 「**Read and Write permissions**」 に変更
 
 初期状態は 「**Read repository contents and packages permissions**」 となっていると思いますが、これを 「**Read and Write permissions**」 に変更してください。  
 ここを変更しておかないと、GitHub Actionsを実行した時に`403`エラーとなってしまいます。  
