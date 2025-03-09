@@ -326,10 +326,10 @@ Unhandled exception. Oracle.ManagedDataAccess.Client.OracleException (0x80004005
 
 ## 参考サイト
 
-[【Docker】Oracleを無料で簡単にローカルに構築する](https://zenn.dev/re24_1986/articles/29430f2f8b4b46)
+<!-- 【Docker】Oracleを無料で簡単にローカルに構築する -->
+https://zenn.dev/re24_1986/articles/29430f2f8b4b46
 
 ## サンプルプログラムのリポジトリ
 
 この記事で作成した成果物を置いてます。  
-
-[rendya2501/docker-oracle-dotnet-sample: DockerでOracleの環境構築 + .Net接続サンプル](https://github.com/rendya2501/docker-oracle-dotnet-sample/tree/main)  
+https://github.com/rendya2501/docker-oracle-dotnet-sample/tree/main  
