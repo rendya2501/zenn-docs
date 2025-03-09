@@ -25,12 +25,11 @@ published: false
 2. 記録が自動でMarkdown化され、GitHubのリポジトリにプッシュされる  
 
 このような仕組みを実現する方法を調べたところ、GitHub Actionsを活用すれば可能であることが分かりました。  
-ただし、ゼロから構築する方法を詳細に解説した記事が少なく、試行錯誤を繰り返しながらようやく実装できました。  
 
-## **なぜこの記事を書いたのか？**
+## なぜこの記事を書いたのか？
 
-GitHub Actions の yml 設定やスクリプトを紹介する記事は多くありますが、ゼロからシステムを構築する方法を解説したものは見つかりませんでした。  
-そのため、本記事では GitHub Actions の知識がほぼない状態から構築した経験をもとに、ゼロベースからの構築方法をまとめることにしました。  
+GitHub Actions の yml設定やスクリプトを紹介する記事は多くありましたが、ゼロからシステムを構築する具体的な方法を解説したサイトは見つかりませんでした。  
+そのため、本記事では GitHub Actions の知識がない状態から構築した経験をもとに、ゼロベースからの構築方法をまとめることにしました。  
 
 ## ヘッドレスCMS
 
@@ -38,9 +37,8 @@ GitHub Actions の yml 設定やスクリプトを紹介する記事は多くあ
 先人たちがそのように紹介していたので、自分も同じように使わせて貰います。  
 
 参考記事:  
-
 <!-- NotionヘッドレスCMS化記録 (3) GitHub Actionsと自動デプロイ | lacolaco's marginalia -->
-- https://blog.lacolaco.net/posts/notion-headless-cms-3/  
+https://blog.lacolaco.net/posts/notion-headless-cms-3/  
 
 ### ヘッドレスCMSとは？
 
@@ -231,7 +229,9 @@ notion-headless-cms-sample/
 ```
 
 各ファイルの内容はサンプルリポジトリからコピペしてください。  
-https://github.com/rendya2501/notion-headless-cms-sample/tree/main/src  
+https://github.com/rendya2501/notion-headless-cms-sample/tree/main/src/NotionToMarkdown.csproj  
+https://github.com/rendya2501/notion-headless-cms-sample/tree/main/src/Program.cs  
+https://github.com/rendya2501/notion-headless-cms-sample/tree/main/src/.gitignore  
 
 #### dotnetコマンドで進める方法
 
@@ -370,7 +370,7 @@ GitHub Actionsを実行しまして、
 
 ![alt text](/images/notion-headless-cms-sample/github-article-demo.png)
 
-## 参考・リンク
+## 参考サイト
 
 <!-- Notionでブログを書く | Yucchiy's Note -->
 https://blog.yucchiy.com/2022/05/blogging-with-notion/  
