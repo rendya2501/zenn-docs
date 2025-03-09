@@ -39,7 +39,8 @@ GitHub Actions の yml 設定やスクリプトを紹介する記事は多くあ
 
 参考記事:  
 
-- [NotionヘッドレスCMS化記録 (3) GitHub Actionsと自動デプロイ | lacolaco's marginalia](https://blog.lacolaco.net/posts/notion-headless-cms-3/)  
+<!-- NotionヘッドレスCMS化記録 (3) GitHub Actionsと自動デプロイ | lacolaco's marginalia -->
+- https://blog.lacolaco.net/posts/notion-headless-cms-3/  
 
 ### ヘッドレスCMSとは？
 
@@ -236,7 +237,7 @@ https://github.com/rendya2501/notion-headless-cms-sample/tree/main/src
 
 一応、`dotnet` コマンドで作業を進める手順も載せておきます。  
 
-- プロジェクトの作成  
+- **プロジェクトの作成**  
 
   ``` bash
   dotnet new console -f net8.0 -o src -n NotionToMarkdown
@@ -244,7 +245,7 @@ https://github.com/rendya2501/notion-headless-cms-sample/tree/main/src
 
   バージョンは.net8で、プロジェクトファイルの出力先は`src`ディレクトリ、プロジェクト名は`NotionToMarkdown`のコンソールプロジェクトを作成する。  
 
-- 依存関係の追加  
+- **依存関係の追加**  
 
   ``` bash
   cd src
@@ -252,12 +253,12 @@ https://github.com/rendya2501/notion-headless-cms-sample/tree/main/src
   dotnet add package Scriban --version 5.12.1
   ```
 
-  **Notion.Net**  
-  Notion APIを利用するためのC#ライブラリで、Notionのデータベースやページにアクセスして操作することができます。  
-  **Scriban**  
-  高速で柔軟なテンプレートエンジンで、テンプレートを使って文字列を生成するのに役立ちます。  
+  - **Notion.Net**  
+    Notion APIを利用するためのC#ライブラリで、Notionのデータベースやページにアクセスして操作することができます。  
+  - **Scriban**  
+    高速で柔軟なテンプレートエンジンで、テンプレートを使って文字列を生成するのに役立ちます。  
 
-- ignoreファイルの作成  
+- **ignoreファイルの作成**  
 
   ``` bash
   dotnet new gitignore
@@ -266,9 +267,9 @@ https://github.com/rendya2501/notion-headless-cms-sample/tree/main/src
   飛ばしても良い作業ですが、GitHubに上げるなら作っておいた方が良いです。  
   `obj`や`bin`フォルダをgitの追跡対象から除外します。  
 
-- Program.csの内容をリポジトリからコピペ
+- **Program.csの内容をリポジトリからコピペ**
 
-  https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/Program.cs
+https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/Program.cs
 
 ### 4. GitHub Actionsのワークフローファイルの作成  
 
