@@ -13,16 +13,17 @@ published: false
 ## 背景
 
 学習記録をGitHubで管理するために、技術スタックごとにディレクトリを分けていましたが、複数技術が絡む場合の管理が煩雑でした。  
-例えば、「C#でEFCoreを使ってデータベース操作をする」という記事を書いた場合、C#？ フレームワーク？ データベース？ どのディレクトリが最適なのか決めかねる、といった具合です。  
+例えば、「C#でEFCoreを使ってデータベース操作をする」という記事を書いた場合、C#？ フレームワーク？ データベース？ どのディレクトリに配置するのが最適なのか決めかねる、といった具合です。  
 そこで、**Notionのデータベースを活用し、タグで技術スタックを管理する方法**を考えました。  
 
 しかし、**学習記録はNotionに蓄積されるものの、GitHubには反映されない**ため、せっかくの学習成果が形として残らないのがもったいないと感じ始めました。  
+
 「Notionに記録するだけで自動的にGitHubに同期される仕組み」があれば理想的だと考えました。  
 
 ## 理想の運用フロー
 
-1. Notionのデータベースに学習記録を追加  
-2. 記録が自動でMarkdown化され、GitHubのリポジトリにプッシュされる  
+1. Notionのデータベースに学習記録を追加する  
+2. 学習記録が自動でMarkdown化され、GitHubのリポジトリにプッシュされる  
 
 このような仕組みを実現する方法を調べたところ、GitHub Actionsを活用すれば可能であることが分かりました。  
 
@@ -81,7 +82,7 @@ https://github.com/yucchiy/notion-to-markdown
    3. リポジトリのpermissionsの設定
 3. C#プロジェクトの作成  
 4. GitHub Actionsのワークフローファイルの作成  
-5. 仕上げ
+5. GitHubにPush
 
 ### 1. Notionの設定
 
@@ -150,13 +151,12 @@ notion-headless-cms-sample/
 │   ├── Program.cs              # メインプログラム
 │   └── NotionToMarkdown.csproj # プロジェクトファイル
 └── articles/                   # 記事ディレクトリ
-    ├── yyyy/
-    |   ├── mm/
-    |   │   ├── Hoge.md
-    |   │   └── Fuga.md
-    |   └── mm/
-    |       └── Piyo.md
-    └── .keep # articlesディレクトリを追跡対象とするためのダミーファイル
+    └── yyyy/
+        ├── mm/
+        │   ├── Hoge.md
+        │   └── Fuga.md
+        └── mm/
+            └── Piyo.md
 ```
 
 #### 2-2. リポジトリのシークレットに登録
@@ -204,10 +204,12 @@ GitHub Actionsで実行する処理を作成していきます。
 
 また、作業方法としては次の2つを想定しています。  
 
-- 完全に手動でファイルを作成して作業する方法  
-- dotnetコマンドでプロジェクトを作成して作業する方法  
+1. 各ファイルを手動で作成&コピペで進める方法  
+2. dotnetコマンドで進める方法  
 
-どちらの方法にせよ、次の3ファイルを用意して、内容はサンプルリポジトリからコピペすればOKです。  
+dotnetに詳しい方であれば2の方法を取れると思いますが、とりあえず実現するだけなら手動でファイルを作成してコピペでいけます。  
+
+どちらの方法にせよ、次の3ファイルを用意して、コードはコピペすればOKです。  
 
 - `NotionToMarkdown.csproj (プロジェクトファイル)`
 - `Program.cs (プログラムファイル)`
@@ -221,17 +223,28 @@ notion-headless-cms-sample/
 │   └── NotionToMarkdown.csproj
 ```
 
-各ファイルの内容はサンプルリポジトリからコピペしてください。  
+#### 1. 各ファイルを手動で作成&コピペで進める方法  
 
+項目名の通りです。  
+
+`src`ディレクトリを作成します。
+
+`NotionToMarkdown.csproj`という名前でファイルを作成して、次のコードをコピペしてください。  
 https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/NotionToMarkdown.csproj  
+
+`Program.cs`という名前でファイルを作成して、次のコードをコピペしてください。  
 https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/Program.cs  
+
+`.gitignore`という名前でファイルを作成して、次のコードをコピペしてください。  
 https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/.gitignore  
 
 <!-- https://github.com/rendya2501/notion-headless-cms-sample/tree/main/src -->
 
-#### dotnetコマンドで進める方法
+#### 2. dotnetコマンドで進める方法
 
-一応、`dotnet` コマンドで作業を進める手順も載せておきます。  
+`dotnet` コマンドで作業を行う手順も載せておきます。  
+
+※事前に`.NET SDK`をインストールしておいてください。  
 
 - **プロジェクトの作成**  
 
@@ -260,9 +273,11 @@ https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/.gitignor
   dotnet new gitignore
   ```
 
-  `obj`や`bin`フォルダをgitの追跡対象から除外します。  
+  dotnetのビルド生成フォルダ `obj`、`bin`をgitの追跡対象から除外するために必要です。  
 
 - **Program.csの内容をリポジトリからコピペ**
+
+  同じくコードに関しては、次のコードをコピペしてください。  
 
 https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/Program.cs
 
@@ -283,80 +298,16 @@ notion-headless-cms-sample/
 
 https://github.com/rendya2501/notion-headless-cms-sample/blob/main/.github/workflows/workflow.yml
 
-<!-- 
-:::details workflow.yml
+### 5. GitHubにPush
 
-```yml
-name: Notion to Markdown Workflow
+最後に、ここまでの作業内容をリポジトリにpushしてください。  
 
-on:
-  workflow_dispatch:
-  # 23:30 に実行する(9時間の時差を考慮)
-  schedule:
-    - cron: '30 14 * * *'
-
-jobs:
-  notion_to_markdown:
-    runs-on: ubuntu-latest
-
-    steps:
-      # リポジトリをチェックアウトするステップ
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # .NETをセットアップするステップ
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0'
-
-      # 依存関係を復元するステップ
-      - name: Restore dependencies
-        run: dotnet restore src/NotionToMarkdown.csproj
-
-      # プロジェクトをビルドするステップ
-      - name: Build
-        run: dotnet build src/NotionToMarkdown.csproj --configuration Release --no-restore
-
-      # 実行ファイルを作成するステップ
-      # プロジェクトをビルドし、実行可能な形式に変換して出力フォルダーに配置します
-      - name: Publish
-        run: dotnet publish src/NotionToMarkdown.csproj --configuration Release --output ./out --no-build
-
-      # NotionからMarkdownに変換するプログラムを実行するステップ
-      - name: Run Notion to Markdown
-        run: |
-          dotnet ./out/NotionToMarkdown.dll \
-            ${{ secrets.NOTION_AUTH_TOKEN }} \
-            ${{ secrets.NOTION_DATABASE_ID }} \
-            "articles/{{publish|date.to_string('%Y/%m')}}/{{slug}}"
-
-      # エクスポートされたファイル数を確認するステップ
-      # ファイル数が0の場合は、処理終了
-      - name: Check for exported files
-        if: env.EXPORTED_COUNT == '0'
-        run: exit 0
-
-      # エクスポートされたMarkdownファイルをリポジトリに反映するステップ
-      - name: Commit exported markdown files
-        run: |
-          git config --global user.email "${{ secrets.USER_EMAIL }}"
-          git config --global user.name "${{ secrets.USER_NAME }}"
-          git add articles/
-          git commit -m "Import files from notion database" || exit 0
-          git push
-```
-
-::: -->
-
-### 5. 仕上げ
-
-最後に `articles` ディレクトリを作成して `.keep` ファイルを作成してください。  
-`articles` ディレクトリが存在しないとマークダウンファイルが生成されないため、gitの追跡対象とする為にダミーファイルを作成します。  
+以上で作業は終わりです。
+お疲れさまでした!  
 
 ## デモ
 
-まずNotionのデータベースがありまして、  
+次のようなNotionのデータベースがありまして、  
 
 ![alt text](/images/notion-headless-cms-sample/notion-database.png)
 
@@ -365,11 +316,11 @@ jobs:
 ![alt text](/images/notion-headless-cms-sample/notion-article1.png)
 ![alt text](/images/notion-headless-cms-sample/notion-article2.png)
 
-GitHub Actionsを実行しまして、
+GitHub Actionsを実行します。  
 
-![alt text](/images/notion-headless-cms-sample/github-actions-demo.png)
+![alt text](/images/notion-headless-cms-sample/run-workflow.png)
 
-それが成功するとNotionの記事がマークダウンとして生成され、GitHubに草が生えます。  
+成功するとNotionの記事がマークダウンとして生成され、GitHubに草が生えます。  
 
 ![alt text](/images/notion-headless-cms-sample/github-article-demo.png)
 
