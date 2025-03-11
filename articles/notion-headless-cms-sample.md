@@ -66,7 +66,7 @@ AIに聞いてみたところ、以下のような回答をしてくれました
 参考リポジトリ:  
 https://github.com/yucchiy/notion-to-markdown  
 
-正直、このリポジトリが無かったら実装出来ていませんでした。  
+正直、このリポジトリがあったからこそ実装出来たようなものでした。  
 本サンプルは、こちらで公開されているC#プロジェクトを `.Net8` に対応させたのと、細かい部分を私なりにアレンジした物となります。  
 
 ## 実装・解説
@@ -118,7 +118,8 @@ https://periodic-cheese-dfa.notion.site/19e4a91b2eac80928ca1ca4acaa42933?v=19e4a
 こちらの記事を参考に**Integration Token**なるものを取得してください。  
 <!-- Notion APIのインテグレーショントークン -->
 https://programming-zero.net/notion-api-setting/  
-`GitHub Actions` の `Seacrets` で使うのでメモしておいてください。  
+
+このトークンは、次の工程(2-2. リポジトリのシークレットに登録)で必要となるのでメモしておいてください。  
 
 #### 1-3. Notion Database ID の取得
 
@@ -131,7 +132,7 @@ https://note.com/amatyrain/n/nb9ebe31dfab7
 >
 >URLは「`https://www.notion.so/XXXXXXXX?v=YYYYYYYY`」といった形式となっていますが、その「`XXXXXXXX`」の部分がデータベースIDとなります  
 
-こちらも `GitHub Actions` の `Seacrets` で使うのでメモしておいてください。  
+こちらのIDも、次の工程(2-2. リポジトリのシークレットに登録)で必要となるのでメモしておいてください。  
 
 ### 2. GitHubリポジトリの設定  
 
@@ -170,7 +171,7 @@ https://qiita.com/mkin/items/75a4928a1fafe5eacd17
 - **リポジトリのSettingsタブ** → **Secrets and variablesのアコーディオン内のActions** → **New repository secret** ボタンを押下  
 
 Notionの設定時にメモしておいた「**Integration Token**」と「**Notion Database ID**」を登録してください。  
-メールアドレスとユーザー名に関してはGitHub Actionsを実行した時に草を生やすために必要です。  
+メールアドレスとユーザー名に関しては、GitHub Actionsを実行した時に草を生やすために必要です。  
 
 | 変数名 | 格納する値 |
 |---|---|
@@ -202,16 +203,16 @@ GitHub Actionsで実行する処理を作成していきます。
 次の2つの環境での作業を想定して進めます。  
 
 - `git clone`してローカルでVSCodeで作業する  
-- GitHubの`Codespaces`で作業する  
+- GitHubのCodespacesで作業する  
 
 また、作業方法としては次の2つを想定しています。  
 
 1. 各ファイルを手動で作成&コピペで進める方法  
 2. dotnetコマンドで進める方法  
 
-dotnetに詳しい方であれば2の方法を取れると思いますが、とりあえず実現するだけなら手動でファイルを作成してコピペでいけます。  
+dotnetに詳しい方であれば、2の方法を取れると思いますが、とりあえず実現するだけなら手動でファイルを作成してコピペでいけます。  
 
-どちらの方法にせよ、次の3ファイルを用意して、コードはコピペすればOKです。  
+どの方法にせよ、次の3ファイルを用意してコードをコピペすればOKです。  
 
 - `NotionToMarkdown.csproj (プロジェクトファイル)`
 - `Program.cs (プログラムファイル)`
