@@ -281,7 +281,7 @@ https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/.gitignor
 
   同じくコードに関しては、次のコードをコピペしてください。  
 
-https://github.com/rendya2501/notion-headless-cms-sample/blob/f29f9cbe749127f60c92279d6e3ed5436800dde8/src/Program.cs#L1
+https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/Program.cs
 
 ### 4. GitHub Actionsのワークフローファイルの作成  
 
