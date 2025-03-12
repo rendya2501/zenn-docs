@@ -238,7 +238,7 @@ https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/NotionToM
 https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/Program.cs  
 
 `.gitignore`という名前でファイルを作成して、次のコードをコピペしてください。  
-<!-- https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/.gitignore   -->
+https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/.gitignore  
 
 <!-- https://github.com/rendya2501/notion-headless-cms-sample/tree/main/src -->
 手動で進める方法は以上となります。  
@@ -281,7 +281,7 @@ https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/Program.c
 
   同じくコードに関しては、次のコードをコピペしてください。  
 
-<!-- https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/Program.cs -->
+https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/Program.cs
 
 ### 4. GitHub Actionsのワークフローファイルの作成  
 
