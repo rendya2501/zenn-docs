@@ -1,5 +1,5 @@
 ---
-title: "Notionを使ったヘッドレスCMSの構築方法"
+title: "NotionをMarkdownに変換して自動でGitHubにpushするサンプルの構築方法"
 emoji: "📑"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["csharp","Notion","GitHubActions"]
