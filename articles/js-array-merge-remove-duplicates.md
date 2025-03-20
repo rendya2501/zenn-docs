@@ -61,10 +61,10 @@ console.log(result);
     ```
 
     - `self.indexOf(x) === i` の意味：
-    - `self.indexOf(x)` は `x` が配列 `self` の中で最初に出現するインデックスを返す。
-    - `i` は `filter` の現在のインデックス。
-    - もし `i` が `indexOf(x)` の値と一致するなら、その要素は最初に登場したものである。
-    - それ以降に出現する重複要素は `indexOf(x) !== i` になるので `false` になり `filter` によって削除される。
+      - `self.indexOf(x)` は `x` が配列 `self` の中で最初に出現するインデックスを返す。
+      - `i` は `filter` の現在のインデックス。
+      - もし `i` が `indexOf(x)` の値と一致するなら、その要素は最初に登場したものである。
+      - それ以降に出現する重複要素は `indexOf(x) !== i` になるので `false` になり `filter` によって削除される。
 
 ## 実際の `filter` の処理の流れ
 
