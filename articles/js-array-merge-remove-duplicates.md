@@ -48,18 +48,18 @@ array.filter(callback(element, index, array))
 2. `filter` を適用：
 
     ```jsx
-    filter((x, i, self) => self.indexOf(x) === i)
+    filter((element, index, self) => self.indexOf(element) === i)
     ```
 
-    - `self.indexOf(x) === i` の意味：
-      - `self.indexOf(x)` は `x` が配列 `self` の中で最初に出現するインデックスを返す。
-      - `i` は `filter` の現在のインデックス。
-      - もし `i` が `indexOf(x)` の値と一致するなら、その要素は最初に登場したものである。
-      - それ以降に出現する重複要素は `indexOf(x) !== i` になるので `false` になり `filter` によって削除される。
+    - `self.indexOf(element) === index` の意味：
+      - `self.indexOf(element)` は `element` が配列 `self` の中で最初に出現するインデックスを返す。
+      - `index` は `filter` の現在のインデックス。
+      - もし `index` が `indexOf(element)` の値と一致するなら、その要素は最初に登場したものである。
+      - それ以降に出現する重複要素は `indexOf(element) !== index` になるので `false` になり `filter` によって削除される。
 
 ## 実際の `filter` の処理の流れ
 
-| i | x | self.indexOf(x) | self.indexOf(x) === i | 残るか？ |
+| index | element | self.indexOf(element) | self.indexOf(element) === index | 残るか？ |
 | --- | --- | --- | --- | --- |
 | 0 | "2020-08-01" | 0 | ✅ (0 === 0) | 残る |
 | 1 | "2020-08-02" | 1 | ✅ (1 === 1) | 残る |
