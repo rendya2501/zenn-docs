@@ -26,31 +26,7 @@ console.log(result);
 // ]
 ```
 
-## 結論: `Set` を使おう
-
-`filter` を使う方法も良いですが、ES6 の `Set` を使うとより簡単に書けます：
-
-```jsx
-const member1 = ["2020-08-01", "2020-08-02", "2020-08-03", "2020-08-04"];
-const member2 = ["2020-08-03", "2020-08-04", "2020-08-05", "2020-08-06"];
-const result = [...new Set([...member1, ...member2])];
-
-console.log(result);
-// [
-//     '2020-08-01',
-//     '2020-08-02',
-//     '2020-08-03',
-//     '2020-08-04',
-//     '2020-08-05',
-//     '2020-08-06'
-// ]
-```
-
-`Set` は重複を自動で削除するので、この方が簡潔で効率的です！
-
-## `filter`について
-
-### `filter` の引数
+## `filter` の引数
 
 ```jsx
 array.filter(callback(element, index, array))
@@ -60,7 +36,7 @@ array.filter(callback(element, index, array))
 - `index`：現在処理している要素のインデックス
 - `array`（`self`）：`filter` が適用されている元の配列
 
-### コードの動作解析
+## コードの動作解析
 
 1. `member1` と `member2` を結合する：
 
@@ -81,7 +57,7 @@ array.filter(callback(element, index, array))
       - もし `index` が `indexOf(element)` の値と一致するなら、その要素は最初に登場したものである。
       - それ以降に出現する重複要素は `indexOf(element) !== index` になるので `false` になり `filter` によって削除される。
 
-### 実際の `filter` の処理の流れ
+## 実際の `filter` の処理の流れ
 
 | index | element | self.indexOf(element) | self.indexOf(element) === index | 残るか？ |
 | --- | --- | --- | --- | --- |
@@ -95,3 +71,25 @@ array.filter(callback(element, index, array))
 | 7 | "2020-08-06" | 7 | ✅ (7 === 7) | 残る |
 
 というわけで、重複のない配列が得られます！
+
+## `Set` を使おう
+
+`filter` を使う方法も良いですが、ES6 の `Set` を使うとより簡単に書けます：
+
+```jsx
+const member1 = ["2020-08-01", "2020-08-02", "2020-08-03", "2020-08-04"];
+const member2 = ["2020-08-03", "2020-08-04", "2020-08-05", "2020-08-06"];
+const result = [...new Set([...member1, ...member2])];
+
+console.log(result);
+// [
+//     '2020-08-01',
+//     '2020-08-02',
+//     '2020-08-03',
+//     '2020-08-04',
+//     '2020-08-05',
+//     '2020-08-06'
+// ]
+```
+
+`Set` は重複を自動で削除するので、この方が簡潔で効率的です！
