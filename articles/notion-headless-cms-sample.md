@@ -151,7 +151,7 @@ https://note.com/amatyrain/n/nb9ebe31dfab7
 notion-headless-cms-sample/
 ├── .github/
 │   └── workflows/
-│       └── workflow.yml        # GitHub Actionsのワークフローファイル
+│       └── deploy.yml        # GitHub Actionsのワークフローファイル
 ├── src/
 │   ├── .gitignore              # ignore file
 │   ├── Program.cs              # メインプログラム
@@ -289,18 +289,18 @@ https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/Program.c
 ### 4. GitHub Actionsのワークフローファイルの作成  
 
 GitHub Actionsを実行するためのワークフローファイルを作成していきます。  
-`.github/workflows`ディレクトリを作成し、その中に`workflow.yml`ファイルを作成してください。  
+`.github/workflows`ディレクトリを作成し、その中に`deploy.yml`ファイルを作成してください。  
 
 ``` txt
 notion-headless-cms-sample/
 ├── .github/
 │   └── workflows/
-│       └── workflow.yml
+│       └── deploy.yml
 ```
 
 ファイルの内容は次の通りです。  
-`workflow.yml`ファイルにコピペしてください。  
-https://github.com/rendya2501/notion-headless-cms-sample/blob/main/.github/workflows/workflow.yml
+`deploy.yml`ファイルにコピペしてください。  
+https://github.com/rendya2501/notion-headless-cms-sample/blob/main/.github/workflows/deploy.yml
 
 ### 5. GitHubにPush
 
