@@ -236,7 +236,7 @@ notion-headless-cms-sample/
 まず、ルートディレクトリにignoreファイルを作成します。  
 
 `.gitignore`という名前でファイルを作成して、次のコードをコピペしてください。  
-https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/.gitignore  
+https://github.com/rendya2501/notion-headless-cms-sample/blob/main/.gitignore  
 
 次に `src`ディレクトリを作成して、その中にファイルを作成して行きます。  
 
