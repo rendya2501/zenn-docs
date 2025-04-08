@@ -167,11 +167,9 @@ notion-headless-cms-sample/
 
 #### 2-2. リポジトリのシークレットに登録
 
-こちらの記事を参考にしながら設定すると分かりやすいと思います。
-<!-- GitHub Actions のシークレット情報と変数の設定方法 #GitHubActions - Qiita -->
-https://qiita.com/mkin/items/75a4928a1fafe5eacd17  
-
-- **リポジトリのSettingsタブ** → **Secrets and variablesのアコーディオン内のActions** → **New repository secret** ボタンを押下  
+- **リポジトリのSettingsタブ**  
+- **Secrets and variablesのアコーディオン内のActions**  
+- **New repository secret** ボタンを押下  
 
 Notionの設定時にメモしておいた「**Integration Token**」と「**Notion Database ID**」を登録してください。  
 メールアドレスとユーザー名に関しては、GitHub Actionsを実行した時に草を生やすために必要です。  
@@ -183,11 +181,16 @@ Notionの設定時にメモしておいた「**Integration Token**」と「**Not
 | **USER_EMAIL** | githubに登録しているメールアドレス |
 | **USER_NAME** | githubのユーザー名 |
 
+こちらの記事を参考にしながら設定すると分かりやすいと思います。
+<!-- GitHub Actions のシークレット情報と変数の設定方法 #GitHubActions - Qiita -->
+https://qiita.com/mkin/items/75a4928a1fafe5eacd17  
+
 #### 2-3. リポジトリのpermissionsの設定
 
-次にリポジトリの`Workflow permissions`を設定していきます。  
-
-- **リポジトリのSettingsタブ** → **Actionsのアコーディオン内のGeneral** → **Workflow permissions** のラジオボタンを確認 → 「**Read and Write permissions**」 に変更
+- **リポジトリのSettingsタブ**  
+- **Actionsのアコーディオン内のGeneral**  
+- **Workflow permissions** のラジオボタンを確認  
+- 「**Read and Write permissions**」 に変更  
 
 初期状態は 「**Read repository contents and packages permissions**」 となっていると思いますが、これを 「**Read and Write permissions**」 に変更してください。  
 ここを変更しておかないと、GitHub Actionsを実行した時に`403`エラーとなってしまいます。  
