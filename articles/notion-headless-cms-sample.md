@@ -151,18 +151,18 @@ https://note.com/amatyrain/n/nb9ebe31dfab7
 notion-headless-cms-sample/
 ├── .github/
 │   └── workflows/
-│       └── deploy.yml        # GitHub Actionsのワークフローファイル
+│       └── deploy.yml          # GitHub Actionsのワークフローファイル
+├── articles/                   # 記事ディレクトリ
+│   └── yyyy/
+│       ├── mm/
+│       │   ├── Hoge.md
+│       │   └── Fuga.md
+│       └── mm/
+│           └── Piyo.md
 ├── src/
-│   ├── .gitignore              # ignore file
 │   ├── Program.cs              # メインプログラム
 │   └── NotionToMarkdown.csproj # プロジェクトファイル
-└── articles/                   # 記事ディレクトリ
-    └── yyyy/
-        ├── mm/
-        │   ├── Hoge.md
-        │   └── Fuga.md
-        └── mm/
-            └── Piyo.md
+└── .gitignore                  # ignore file
 ```
 
 #### 2-2. リポジトリのシークレットに登録
@@ -224,15 +224,21 @@ dotnetに詳しい方であれば、2の方法を取れると思いますが、�
 ``` txt
 notion-headless-cms-sample/
 ├── src/
-│   ├── .gitignore
 │   ├── Program.cs
 │   └── NotionToMarkdown.csproj
+└── .gitignore
 ```
 
 #### 1. 各ファイルを手動で作成&コピペで進める方法  
 
 項目名の通りです。  
-`src`ディレクトリを作成して、その中にファイルを作成して行きます。  
+
+まず、ルートディレクトリにignoreファイルを作成します。  
+
+`.gitignore`という名前でファイルを作成して、次のコードをコピペしてください。  
+https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/.gitignore  
+
+次に `src`ディレクトリを作成して、その中にファイルを作成して行きます。  
 
 `NotionToMarkdown.csproj`という名前でファイルを作成して、次のコードをコピペしてください。  
 https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/NotionToMarkdown.csproj  
@@ -240,15 +246,12 @@ https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/NotionToM
 `Program.cs`という名前でファイルを作成して、次のコードをコピペしてください。  
 https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/Program.cs  
 
-`.gitignore`という名前でファイルを作成して、次のコードをコピペしてください。  
-https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/.gitignore  
-
-<!-- https://github.com/rendya2501/notion-headless-cms-sample/tree/main/src -->
 手動で進める方法は以上となります。  
 
 #### 2. dotnet コマンドで進める方法
 
-`dotnet` コマンドで作業を行う手順も載せておきます。  
+`dotnet` コマンドで作業を行う方法も紹介しておきます。  
+ルートディレクトリからコマンドを実行していく前提で話を進めます。  
 ※ローカルで作業する場合、`.NET SDK`をインストールしておいてください。  
 
 - **プロジェクトの作成**  
@@ -258,6 +261,14 @@ https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/.gitignor
   ```
 
   バージョンは `.net8` で、プロジェクトファイルの出力先は`src`ディレクトリ、プロジェクト名は`NotionToMarkdown`でコンソールプロジェクトを作成する。  
+
+- **ignoreファイルの作成**  
+
+  ``` bash
+  dotnet new gitignore
+  ```
+
+  dotnetのビルド生成フォルダ `obj`、`bin`をgitの追跡対象から除外するために必要です。  
 
 - **依存関係の追加**  
 
@@ -272,19 +283,11 @@ https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/.gitignor
   - **Scriban**  
     高速で柔軟なテンプレートエンジンで、テンプレートを使って文字列を生成するのに役立ちます。  
 
-- **ignoreファイルの作成**  
-
-  ``` bash
-  dotnet new gitignore
-  ```
-
-  dotnetのビルド生成フォルダ `obj`、`bin`をgitの追跡対象から除外するために必要です。  
-
 - **Program.csの内容をリポジトリからコピペ**
 
   同じくコードに関しては、次のコードをコピペしてください。  
 
-https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/Program.cs  
+  https://github.com/rendya2501/notion-headless-cms-sample/blob/main/src/Program.cs  
 
 ### 4. GitHub Actionsのワークフローファイルの作成  
 
