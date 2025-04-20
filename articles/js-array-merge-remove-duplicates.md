@@ -6,7 +6,7 @@ topics: [js]
 published: true
 ---
 
-## はじめに <BR/> sssss
+## はじめに
 
 よくわからないけど動く。  
 
