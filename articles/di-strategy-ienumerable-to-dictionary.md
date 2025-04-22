@@ -1,5 +1,5 @@
 ---
-title: "Strategy パターンにおける検索最適化：FirstOrDefault から Dictionary への移行と DI コンテナでの実装例"
+title: "DI コンテナでStrategy パターンの実装：IEnumerable実装 から IDictionary 最適化へ"
 emoji: "⛳"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["designpattern","csharp","dotnet"]
