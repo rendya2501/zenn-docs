@@ -165,6 +165,8 @@ Console.WriteLine(output);
 [Default Strategy] Input: 6. Unknown input
 ```
 
+https://gist.github.com/rendya2501/a4302075527dfeac5c7852e42c01f235#file-program-cs
+
 ## 案2 : IDictionaryパターン
 
 **ContentHandler の実装**  
@@ -255,6 +257,8 @@ Console.WriteLine(output);
 [Default Strategy] Input: 6. Unknown input
 ```
 
+https://gist.github.com/rendya2501/a4302075527dfeac5c7852e42c01f235#file-2-idictionary
+
 ## 案3 : IDictionary拡張 パターン
 
 `IDictionary` では `GetValueOrDefault` メソッドが存在しないので `IDictionary` インターフェースに拡張メソッドを定義して `GetValueOrDefault` メソッドを実装して使用できるようにしたパターン。  
@@ -300,6 +304,8 @@ public static class DictionaryExtensions
     }
 }
 ```
+
+https://gist.github.com/rendya2501/a4302075527dfeac5c7852e42c01f235#file-3-idictionary
 
 ## メリットとデメリット（一般論として）
 
