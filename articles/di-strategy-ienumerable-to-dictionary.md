@@ -257,7 +257,7 @@ Console.WriteLine(output);
 [Default Strategy] Input: 6. Unknown input
 ```
 
-https://gist.github.com/rendya2501/a4302075527dfeac5c7852e42c01f235#file-2-idictionary
+https://gist.github.com/rendya2501/e87db27d13e7ec0075a1651faba87fc8
 
 ## 案3 : IDictionary拡張 パターン
 
@@ -305,7 +305,7 @@ public static class DictionaryExtensions
 }
 ```
 
-https://gist.github.com/rendya2501/a4302075527dfeac5c7852e42c01f235#file-3-idictionary
+https://gist.github.com/rendya2501/99b8bc8268ad61831b00ca80a657eec9
 
 ## メリットとデメリット（一般論として）
 
