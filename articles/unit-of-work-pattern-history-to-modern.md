@@ -67,21 +67,6 @@ Martin Fowlerが『Patterns of Enterprise Application Architecture』(2002) で�
 - 非同期は `BeginXxx/EndXxx` のAPMパターン（`async/await` は C# 5.0で登場）
 - null 許容参照型なし
 
-### なぜ「古典的UoW」はこうなったのか
-
-DIコンテナがないため、**UoWが自らリポジトリを生成・管理する必要がありました。** これは単純なバッドプラクティスではなく、技術的制約への合理的な適応です。
-
-```txt
-[ Client ]
-    ↓ 
-[ Unit of Work ] ─── (生成・保持) ──→ [ Repository A ]
-    │            ─── (生成・保持) ──→ [ Repository B ]
-    ↓
-[ DB Connection / Transaction ]
-```
-
-UoWが「Factory」と「Transaction Manager」の2つの責務を担う設計になるのは、この状況では必然でした。
-
 ### Fowler が定義した UoW の3責務を実装する
 
 原典のUoWは変更追跡・Identity Map・トランザクション管理の3つを担います。以下はその全実装です。C# 2.0時代の書き方（`var`なし、オブジェクト初期化子なし、ジェネリクスは限定的）で記述します。
@@ -942,6 +927,19 @@ finally
 - リポジトリ追加のたびにUoWインターフェースの修正が必要
 - UoWが「Factory」「Transaction Manager」「変更追跡エンジン」を兼任しすぎ
 - テスト・モックが非常に複雑
+
+**なぜ「古典的UoW」はこうなったのか**  
+
+DIコンテナがないため、UoWが自らリポジトリを生成・管理する必要がありました。「Factory」と「Transaction Manager」の2つの責務を担う設計になるのは、この状況では必然です。
+
+```txt
+[ Client ]
+    ↓
+[ Unit of Work ] ─── (生成・保持) ──→ [ Repository A ]
+    │            ─── (生成・保持) ──→ [ Repository B ]
+    ↓
+[ DB Connection / Transaction ]
+```
 
 これらは設計ミスではなく、DIコンテナがない時代への合理的な適応です。当時のコードを読んで「なぜこんな密結合な設計を？」と思わず、「DIコンテナがなかった時代の設計だ」と理解することが重要です。
 
