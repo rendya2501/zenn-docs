@@ -69,7 +69,11 @@ Martin Fowlerが『Patterns of Enterprise Application Architecture』(2002) で�
 
 ### Fowler が定義した UoW の3責務を実装する
 
-原典のUoWは変更追跡・Identity Map・トランザクション管理の3つを担います。以下はその全実装です。C# 2.0時代の書き方（`var`なし、オブジェクト初期化子なし、ジェネリクスは限定的）で記述します。
+原典のUoWは変更追跡・Identity Map・トランザクション管理の3つを担います。  
+
+※ 当時の言語仕様（C# 2.0 : 'var'なし、オブジェクト初期化子なし、ジェネリクスは限定的）で実装を再現するため、かなり冗長です。雰囲気だけ掴みたい人は読み飛ばしてください。  
+
+:::details 全実装コードを見る（約800行・C# 2.0スタイル）
 
 #### Identity Map とは
 
@@ -871,7 +875,7 @@ public class ProductRepository : IProductRepository
 }
 ```
 
-### 使用例
+#### 使用例
 
 ```csharp
 string connectionString = ConfigurationManager
@@ -912,6 +916,8 @@ finally
     uow.Dispose();
 }
 ```
+
+:::
 
 ### このパターンの評価
 
