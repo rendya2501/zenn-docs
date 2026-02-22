@@ -1,5 +1,5 @@
 ---
-title: "Unit of Work パターン研究ノート：歴史から現代の実装まで"
+title: "Unit of Work パターン 研究ノート：歴史から現代の実装まで"
 emoji: "📚"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["csharp","dotnet","designpattern","architecture"]
@@ -70,10 +70,7 @@ Martin Fowlerが『Patterns of Enterprise Application Architecture』(2002) で�
 ### Fowler が定義した UoW の3責務を実装する
 
 原典のUoWは変更追跡・Identity Map・トランザクション管理の3つを担います。  
-
-※ 当時の言語仕様（C# 2.0 : 'var'なし、オブジェクト初期化子なし、ジェネリクスは限定的）で実装を再現するため、かなり冗長です。雰囲気だけ掴みたい人は読み飛ばしてください。  
-
-:::details 全実装コードを見る（約800行・C# 2.0スタイル）
+時代背景を考慮して、当時の言語バージョンであるC# 2.0（varなし、オブジェクト初期化子なし、ジェネリクスは限定的）で記述します。  
 
 #### Identity Map とは
 
@@ -96,10 +93,16 @@ Order order2 = uow.GetOrder(1); // マップから返す（DB問い合わせな�
 
 `RegisterClean()` で「取得したオブジェクトの元の状態」を記録し、`Commit()` 時に現在の状態と比較して変更があったものだけをUPDATEします。手動で `Update()` を呼ぶ必要がなくなります。
 
-#### 完全実装
+#### UoWの実装
+
+変更追跡・Identity Map・トランザクション管理を含んだUoWの完全実装です。  
+かなり長くなった(約500行)ので折りたたみました。  
+興味のある人だけ見てください。  
+
+:::details 完全実装を見る（約500行）
 
 ```csharp
-// エンティティの基底クラス（C# 2.0スタイル）
+// エンティティの基底クラス
 public abstract class Entity
 {
     private int _id;
@@ -638,9 +641,13 @@ public class UnitOfWork : IUnitOfWork
 }
 ```
 
+:::
+
 #### リポジトリ側の実装（Identity Map を使う）
 
 リポジトリの `GetById` は、まずUoWのIdentity Mapを確認し、なければDBへ問い合わせます。取得後は `RegisterClean()` でマップに登録します。
+
+:::details リポジトリの実装を見る（約200行）
 
 ```csharp
 public interface IOrderRepository
@@ -875,6 +882,8 @@ public class ProductRepository : IProductRepository
 }
 ```
 
+:::
+
 #### 使用例
 
 ```csharp
@@ -916,8 +925,6 @@ finally
     uow.Dispose();
 }
 ```
-
-:::
 
 ### このパターンの評価
 
@@ -1348,9 +1355,9 @@ public class DbSession : IDbSessionManager, IDisposable
 ```csharp
 public interface IUnitOfWork : IDisposable, IAsyncDisposable
 {
-    Task BeginTransactionAsync(CancellationToken ct = default);
-    Task CommitAsync(CancellationToken ct = default);
-    Task RollbackAsync(CancellationToken ct = default);
+    Task BeginTransactionAsync(CancellationToken cancellationToken = default);
+    Task CommitAsync(CancellationToken cancellationToken = default);
+    Task RollbackAsync(CancellationToken cancellationToken = default);
 }
 
 public class UnitOfWork : IUnitOfWork
@@ -1363,7 +1370,7 @@ public class UnitOfWork : IUnitOfWork
         _sessionManager = sessionManager;
     }
 
-    public async Task BeginTransactionAsync(CancellationToken ct = default)
+    public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
         if (_sessionManager.Transaction != null)
         {
@@ -1372,14 +1379,14 @@ public class UnitOfWork : IUnitOfWork
 
         if (_sessionManager.Connection.State != ConnectionState.Open)
         {
-            await ((DbConnection)_sessionManager.Connection).OpenAsync(ct);
+            await ((DbConnection)_sessionManager.Connection).OpenAsync(cancellationToken);
         }
 
         _sessionManager.Transaction = await ((DbConnection)_sessionManager.Connection)
-            .BeginTransactionAsync(ct);
+            .BeginTransactionAsync(cancellationToken);
     }
 
-    public async Task CommitAsync(CancellationToken ct = default)
+    public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
         if (_sessionManager.Transaction == null)
         {
@@ -1388,7 +1395,7 @@ public class UnitOfWork : IUnitOfWork
 
         try
         {
-            await ((DbTransaction)_sessionManager.Transaction).CommitAsync(ct);
+            await ((DbTransaction)_sessionManager.Transaction).CommitAsync(cancellationToken);
         }
         finally
         {
@@ -1397,7 +1404,7 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
-    public async Task RollbackAsync(CancellationToken ct = default)
+    public async Task RollbackAsync(CancellationToken cancellationToken = default)
     {
         if (_sessionManager.Transaction == null)
         {
@@ -1406,7 +1413,7 @@ public class UnitOfWork : IUnitOfWork
 
         try
         {
-            await ((DbTransaction)_sessionManager.Transaction).RollbackAsync(ct);
+            await ((DbTransaction)_sessionManager.Transaction).RollbackAsync(cancellationToken);
         }
         finally
         {
@@ -1650,7 +1657,7 @@ public interface IUnitOfWork : IDisposable, IAsyncDisposable
     // ラムダ式でビジネスロジックを渡すだけ
     Task<Result<T>> ExecuteInTransactionAsync<T>(
         Func<Task<Result<T>>> operation,
-        CancellationToken ct = default);
+        CancellationToken cancellationToken = default);
 }
 
 // IDbSessionManager はパターンAで定義済みのものを流用
@@ -1665,7 +1672,7 @@ public class UnitOfWork(
 
     public async Task<Result<T>> ExecuteInTransactionAsync<T>(
         Func<Task<Result<T>>> operation,
-        CancellationToken ct = default)
+        CancellationToken cancellationToken = default)
     {
         // サービスAがサービスBを呼び出し、両方がこのメソッドを呼ぶケースを検出する
         if (IsInTransaction.Value)
@@ -1678,10 +1685,10 @@ public class UnitOfWork(
         try
         {
             if (sessionManager.Connection.State != ConnectionState.Open)
-                await ((DbConnection)sessionManager.Connection).OpenAsync(ct);
+                await ((DbConnection)sessionManager.Connection).OpenAsync(cancellationToken);
 
             var transaction = await ((DbConnection)sessionManager.Connection)
-                .BeginTransactionAsync(ct);
+                .BeginTransactionAsync(cancellationToken);
 
             // セッションにトランザクションをセット → リポジトリが IDbSession 経由で参照できる
             sessionManager.Transaction = transaction;
@@ -1692,12 +1699,12 @@ public class UnitOfWork(
 
             if (result.IsSuccess)
             {
-                await ((DbTransaction)transaction).CommitAsync(ct);
+                await ((DbTransaction)transaction).CommitAsync(cancellationToken);
                 logger.LogInformation("Transaction committed");
             }
             else
             {
-                await ((DbTransaction)transaction).RollbackAsync(ct);
+                await ((DbTransaction)transaction).RollbackAsync(cancellationToken);
                 logger.LogWarning("Transaction rolled back: {Errors}",
                     string.Join(", ", result.Errors));
             }
@@ -1707,7 +1714,7 @@ public class UnitOfWork(
         catch (Exception ex)
         {
             if (sessionManager.Transaction is DbTransaction t)
-                await t.RollbackAsync(ct);
+                await t.RollbackAsync(cancellationToken);
             logger.LogError(ex, "Transaction rolled back due to exception");
             throw;
         }
@@ -1750,12 +1757,12 @@ public class OrderService(
     public async Task<Result<int>> CreateOrderAsync(Order order)
     {
         // try-catch-rollbackのボイラープレートは不要
-        return await _uow.ExecuteInTransactionAsync(async () =>
+        return await uow.ExecuteInTransactionAsync(async () =>
         {
             if (order.Items.Count == 0)
                 return Result.Fail<int>("Order must have at least one item");
 
-            var product = await _inventoryRepo.GetByIdAsync(order.ProductId);
+            var product = await inventoryRepo.GetByIdAsync(order.ProductId);
             if (product == null)
                 return Result.Fail<int>($"Product {order.ProductId} not found");
 
@@ -1764,8 +1771,8 @@ public class OrderService(
                     $"Insufficient stock. Available: {product.Stock}, " +
                     $"Requested: {order.Quantity}");
 
-            var orderId = await _orderRepo.CreateAsync(order);
-            await _inventoryRepo.UpdateStockAsync(
+            var orderId = await orderRepo.CreateAsync(order);
+            await inventoryRepo.UpdateStockAsync(
                 order.ProductId, product.Stock - order.Quantity);
 
             return Result.Ok(orderId);
@@ -1779,19 +1786,12 @@ public class OrderService(
 ```csharp
 [ApiController]
 [Route("api/[controller]")]
-public class OrdersController : ControllerBase
+public class OrdersController(IOrderService orderService) : ControllerBase
 {
-    private readonly IOrderService _orderService;
-
-    public OrdersController(IOrderService orderService)
-    {
-        _orderService = orderService;
-    }
-
     [HttpPost]
     public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
     {
-        var result = await _orderService.CreateOrderAsync(request.ToOrder());
+        var result = await orderService.CreateOrderAsync(request.ToOrder());
 
         if (result.IsSuccess)
             return Ok(new { orderId = result.Value });
@@ -1843,10 +1843,10 @@ return orderId; // 暗黙的にErrorOr<int>.Successに変換
 // using LanguageExt;
 public async Task<Either<Error, int>> CreateOrderAsync(Order order)
 {
-    return await _uow.ExecuteInTransactionAsync(async () =>
+    return await uow.ExecuteInTransactionAsync(async () =>
     {
         Either<Error, Order> validated = ValidateOrder(order);
-        return await validated.BindAsync(async o => await _orderRepo.CreateAsync(o));
+        return await validated.BindAsync(async o => await orderRepo.CreateAsync(o));
     });
 }
 ```
@@ -1858,7 +1858,7 @@ public async Task<Either<Error, int>> CreateOrderAsync(Order order)
 ```csharp
 return await Result.Success(order)
     .Ensure(o => o.Items.Any(), "Order must have items")
-    .Bind(async o => await _orderRepo.CreateAsync(o));
+    .Bind(async o => await orderRepo.CreateAsync(o));
 ```
 
 どのライブラリを選ぶかは、チームの関数型プログラミングへの習熟度と、エラー表現の厳密さをどこまで求めるかで判断してください。
@@ -2140,16 +2140,16 @@ public class CreateOrderHandler(
     : IRequestHandler<CreateOrderCommand, Result<int>>
 {
     public async Task<Result<int>> Handle(
-        CreateOrderCommand request,
+        CreateOrderCommand command,
         CancellationToken cancellationToken)
     {
         var customer = await dbContext.Customers
-            .FindAsync([request.CustomerId], cancellationToken);
+            .FindAsync([command.CustomerId], cancellationToken);
 
         if (customer == null)
-            return Result.Fail<int>($"Customer {request.CustomerId} not found");
+            return Result.Fail<int>($"Customer {command.CustomerId} not found");
 
-        foreach (var item in request.Items)
+        foreach (var item in command.Items)
         {
             var product = await dbContext.Products
                 .FindAsync([item.ProductId], cancellationToken);
@@ -2166,9 +2166,9 @@ public class CreateOrderHandler(
 
         var order = new Order
         {
-            CustomerId = request.CustomerId,
+            CustomerId = command.CustomerId,
             OrderDate = DateTime.UtcNow,
-            Items = request.Items.Select(i => new OrderItem
+            Items = command.Items.Select(i => new OrderItem
             {
                 ProductId = i.ProductId,
                 Quantity = i.Quantity,
@@ -2181,7 +2181,7 @@ public class CreateOrderHandler(
         // DB生成IDが必要な場合はここで SaveChangesAsync を呼ぶ
         // TransactionBehavior がトランザクションを保持しているためコミットはしない
         // EF Core が INSERT 後に order.Id へ DB生成値を自動で書き戻す
-        await dbContext.SaveChangesAsync(ct);
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         return Result.Ok(order.Id);
         // TransactionBehavior が Result.IsSuccess を確認後、SaveChanges → Commit を実行
@@ -2200,18 +2200,18 @@ public class GetOrderByIdHandler(ApplicationDbContext dbContext)
     : IRequestHandler<GetOrderByIdQuery, Result<OrderDto>>
 {
     public async Task<Result<OrderDto>> Handle(
-        GetOrderByIdQuery request,
+        GetOrderByIdQuery query,
         CancellationToken cancellationToken)
     {
         // 読み取りのみ。トランザクションは不要
         var order = await dbContext.Orders
             .AsNoTracking() // 変更追跡も不要
-            .Where(o => o.Id == request.OrderId)
+            .Where(o => o.Id == query.OrderId)
             .Select(o => new OrderDto(o.Id, o.CustomerId, o.OrderDate))
             .FirstOrDefaultAsync(cancellationToken);
 
         if (order is null)
-            return Result.Fail<OrderDto>($"Order {request.OrderId} not found");
+            return Result.Fail<OrderDto>($"Order {query.OrderId} not found");
 
         return Result.Ok(order);
     }
@@ -2307,7 +2307,7 @@ public class CreateOrderHandler(
     : IRequestHandler<CreateOrderCommand, Result<int>>
 {
     // ハンドラー内（TransactionBehaviorのトランザクション内で動いている）
-    public async Task<Result<int>> Handle(CreateOrderCommand command, CancellationToken ct)
+    public async Task<Result<int>> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
     {
         var order = command.ToOrder(); // command からエンティティを生成
 
@@ -2315,7 +2315,7 @@ public class CreateOrderHandler(
 
         // ケース1：IDを確定させるため SaveChanges を中間で呼ぶ
         // CurrentTransaction があるためコミットはしない
-        await dbContext.SaveChangesAsync(ct); // INSERTは走る。コミットはしない
+        await dbContext.SaveChangesAsync(cancellationToken); // INSERTは走る。コミットはしない
         // EF Core が INSERT 後に order.Id へ DB生成値を自動で書き戻す
         // この時点で order.Id が確定している
 
@@ -2416,13 +2416,13 @@ public class CreateOrderHandler
 {
     public async Task<Result<int>> Handle(...)
     {
-        return await _uow.ExecuteInTransactionAsync(async () =>
+        return await uow.ExecuteInTransactionAsync(async () =>
         {
             // EF Core でドメインロジック
-            var orderId = await _orderRepo.CreateAsync(order);
+            var orderId = await orderRepo.CreateAsync(order);
 
             // レガシーストアドプロシージャも同一トランザクション内で実行
-            await _dbContext.Database.ExecuteSqlRawAsync(
+            await dbContext.Database.ExecuteSqlRawAsync(
                 "EXEC UpdateInventory @ProductId, @Quantity", ...);
 
             return Result.Ok(orderId);
@@ -2435,7 +2435,7 @@ public class GetOrderListHandler
 {
     public async Task<Result<List<OrderDto>>> Handle(...)
     {
-        var orders = await _connection.QueryAsync<OrderDto>(
+        var orders = await connection.QueryAsync<OrderDto>(
             "SELECT * FROM Orders WHERE CustomerId = @CustomerId", ...);
         return Result.Ok(orders.ToList());
     }
@@ -2531,7 +2531,9 @@ ADO.NET時代はUoWクラス自身が抱えていた。Entity Frameworkの登場
   <https://learn.microsoft.com/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design>
   原文：*"I'm really not a fan of repositories, mainly because they hide the important details of the underlying persistence mechanism. [...] Going CQRS meant that we didn't really have a need for repositories any more."*
 
-### Part 3 / パターン A：ベーシック UoW（Dapper 環境）
+### Part 3：EF/EFCore登場以降
+
+#### パターン A：ベーシック UoW（Dapper 環境）
 
 **Dapper（軽量ORMとして普及した背景）**  
 
@@ -2543,7 +2545,12 @@ ADO.NET時代はUoWクラス自身が抱えていた。Entity Frameworkの登場
 - Microsoft. *Dependency injection in ASP.NET Core*  
   <https://learn.microsoft.com/aspnet/core/fundamentals/dependency-injection>
 
-### パターン B：スコープベース UoW（筆者オリジナル設計）
+**著者のサンプルリポジトリ**  
+
+- ベーシック UoW（Dapper 環境）サンプル  
+  <https://github.com/rendya2501/dapper-unit-of-work-basic-sample>  
+
+#### パターン B：スコープベース UoW（筆者オリジナル設計）
 
 > このパターンは既存の文献に直接の出典を持たない筆者の独自設計です。
 > 以下はその設計思想の背景となった概念の出典です。
@@ -2561,13 +2568,18 @@ ADO.NET時代はUoWクラス自身が抱えていた。Entity Frameworkの登場
 - LanguageExt: <https://github.com/louthy/language-ext>
 - CSharpFunctionalExtensions: <https://github.com/vkhorikov/CSharpFunctionalExtensions>
 
-### パターン C：パイプライン UoW（VSA + MediatR 環境）
+**著者のサンプルリポジトリ**  
+
+- スコープベース UoW サンプル  
+  <https://github.com/rendya2501/dapper-unit-of-work-scope-sample>  
+
+#### パターン C：パイプライン UoW（VSA + MediatR 環境）
 
 **Vertical Slice Architecture の提唱**  
 
 - Jimmy Bogard. *Vertical Slice Architecture* (2018)  
   <https://www.jimmybogard.com/vertical-slice-architecture/>
-  パターンCの設計思想の直接的な一次ソース。レイヤードアーテクチャからの脱却とCQRSとの関係を論じている。
+  パターンCの設計思想の直接的な一次ソース。レイヤードアーキテクチャからの脱却とCQRSとの関係を論じている。
 
 **MediatR（Pipeline Behaviorsの実装ライブラリ）**  
 
