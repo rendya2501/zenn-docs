@@ -6,22 +6,6 @@ topics: ["csharp","dotnet","designpattern","architecture"]
 published: false
 ---
 
-## 目次
-
-- [はじめに](#はじめに)
-- [Unit of Work とは](#unit-of-work-とは)
-- [Part 1：古典的な Unit of Work（ADO.NET時代）](#part-1古典的な-unit-of-workadonet時代)
-- [Part 2：Entity Framework の登場と UoW の変容](#part-2entity-framework-の登場と-uow-の変容)
-- [Part 3：UoWを使うべき場面（EF登場以降）](#part-3uowを使うべき場面ef登場以降)
-- [パターン A：ベーシックUoW（Dapper・生SQL環境）](#パターン-aベーシックuowdapper生sql環境)
-- [パターン B：スコープベースUoW（Result型 + 自動トランザクション判定）](#パターン-bスコープベースuowresult型--自動トランザクション判定)
-- [パターン C：パイプラインUoW（VSA + MediatR 環境）](#パターン-cパイプラインuowvsa--mediatr-環境)
-- [プロジェクト別の選択ガイド](#プロジェクト別の選択ガイド)
-- [まとめ](#まとめ)
-- [参考文献・出典](#参考文献・出典)
-
----
-
 ## はじめに
 
 この記事は、自分のための研究ノートです。
@@ -32,16 +16,12 @@ published: false
 
 まとめたらそれなりのものになっただけで、よかったら誰か読んでみてください程度のものです。特にUoWについて調べている人や、レガシー案件でトランザクション管理に悩んでいる人の参考になれば幸いです。
 
----
-
 ## TL;DR
 
 - Unit of Workパターンの原典定義（Fowler）と、現代での責務の変化
 - EF Core環境でUoWが不要になった理由
 - Dapper/生SQL環境向けの3つの実装パターン（ベーシックUoW・スコープベースUoW・パイプラインUoW）  
   ※スコープベースUoWはResult型 + ラムダスコープによる筆者の実装
-
----
 
 ## Unit of Work とは
 
@@ -65,8 +45,6 @@ Martin Fowlerが『Patterns of Enterprise Application Architecture』(2002) で�
 - ボイラープレートなコードを排除したい
 
 なぜ定義が変わったのか――その理由を理解するために、まず歴史から見ていきます。
-
----
 
 ## Part 1：古典的な Unit of Work（ADO.NET時代）
 
@@ -967,8 +945,6 @@ finally
 
 これらは設計ミスではなく、DIコンテナがない時代への合理的な適応です。当時のコードを読んで「なぜこんな密結合な設計を？」と思わず、「DIコンテナがなかった時代の設計だ」と理解することが重要です。
 
----
-
 ## Part 2：Entity Framework の登場と UoW の変容
 
 ### 時代背景（2008年〜2015年頃）
@@ -1235,8 +1211,6 @@ public class UnitOfWork : IUnitOfWork
 - Generic Repositoryは過度な抽象化になりやすい
 - 「Repository パターンは Entity Framework には不要」という意見が主流になった
 
----
-
 ## Part 3：UoWを使うべき場面（EF登場以降）
 
 Entity Framework（およびEF Core）が登場したことで、「UoWはもう不要なのか？」という議論が生まれました。結論としては、EF / EF Core を使っているなら、ほとんどの場合、不要です。DbContext 自体がUoWの役割を担っており、変更追跡・Identity Map・トランザクション管理のすべてを内包しているため、別途UoWクラスを作る必要はありません。
@@ -1279,8 +1253,6 @@ EF登場以降のUoW：
 > **注記：** 「ADO.NET時代はUoWに変更追跡を求めた、Dapper採用者は求めない」という対比を単一の文献で示すソースは確認できていません。上記はFowler『PoEAA』の設計意図とDapperのREADMEに示された採用目的から導出した筆者の解釈です。
 
 以降では、Dapper・生SQL環境向けの2つのパターンを解説します。
-
----
 
 ## パターン A：ベーシックUoW（Dapper・生SQL環境）
 
@@ -1579,8 +1551,6 @@ public class OrderService : IOrderService
 3. **`IAsyncDisposable`（C# 8.0）**：`await using` による非同期リソース解放が標準化された
 
 この「デメリット」を解消するために生まれたのが次のスコープベースUoWです。
-
----
 
 ## パターン B：スコープベースUoW（Result型 + 自動トランザクション判定）
 
@@ -1949,8 +1919,6 @@ return await Result.Success(order)
 
 既存のコードをパターンAで維持しながら、新しい機能からパターンBを段階的に導入するのが現実的なアプローチです。Result型に不慣れなメンバーはパターンA、慣れたメンバーはパターンBを使うという混在も許容できます。
 
----
-
 ## パターン C：パイプラインUoW（VSA + MediatR 環境）
 
 ### 時代背景（2023年〜現在）
@@ -2299,8 +2267,6 @@ HTTP Response
 
 **ポイント：** TransactionBehaviorはHandlerを「外側から包む」構造です。`next()` を呼び出してHandlerを実行し、その結果を受け取ってからコミット/ロールバックを判定します。HandlerはトランザクションもSaveChangesも意識する必要がありません。
 
----
-
 ### コラム：EF Core + パイプラインで、TransactionBehavior は本当に必要か？
 
 パイプライン方式で EF Core を使うとき、こんな疑問が生まれます。
@@ -2383,8 +2349,6 @@ public class CreateOrderHandler(
 
 「VSA + MediatR を採用しつつ、TransactionBehavior を最初から持っておく」という選択は、将来の混在環境への備えとして合理的です。UoWは実装クラスとして姿を消しても、その概念と役割は Pipeline Behavior の中に生き続けています。
 
----
-
 ### このパターンの評価
 
 **メリット：**  
@@ -2407,8 +2371,6 @@ public class CreateOrderHandler(
 2. **Minimal API（.NET 6+）**：エンドポイントの簡潔な定義とVSAとの相性
 3. **プライマリコンストラクタ（C# 12）**：ハンドラーの依存性注入がさらに簡潔に
 4. **FluentValidation**：宣言的なバリデーションをパイプラインに組み込める
-
----
 
 ## プロジェクト別の選択ガイド
 
@@ -2476,8 +2438,6 @@ public class GetOrderListHandler
 }
 ```
 
----
-
 ## まとめ
 
 Unit of Work パターンの変遷をまとめると、こうなります。
@@ -2500,8 +2460,6 @@ Unit of Work パターンの変遷をまとめると、こうなります。
 
 各パターンを理解しているからこそ、古いコードの意図が読め、混在環境で適切な設計判断ができ、新しいアーキテクチャを採用する際に「なぜそうなっているか」を説明できます。
 
----
-
 ### 20年以上の進化を経ても、UoWの核は変わらない
 
 技術が変わり、アーキテクチャが変わり、UoWの実装形態は大きく変化しました。しかし次の3点は一度も変わっていません。
@@ -2515,8 +2473,6 @@ Unit of Work パターンの変遷をまとめると、こうなります。
 ADO.NET時代はUoWクラス自身が抱えていた。Entity Frameworkの登場でDbContextに移った。Dapper環境ではサービス層に戻った。そしてVSA + MediatRの時代に、Pipeline Behaviorへと移譲された。
 
 責務の場所は変わり続けています。でも責務そのものは、2002年にFowlerが定義したときから変わっていません。
-
----
 
 ## 参考文献・出典
 
