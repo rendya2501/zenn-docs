@@ -8,11 +8,11 @@
 
 GoFのストラテジーパターンの基本実装から、DIコンテナを活用した現代的な設計、.NET 8で導入されたKeyed Servicesの調査・研究まで、「なぜそうするのか」を軸に段階的に解説します。
 
-**対象読者**
+**対象読者*  
+
 - C#/.NETの開発経験あり
 - DIコンテナの基本的な使い方を知っている
 - デザインパターンの基礎知識あり
-
 
 ## 目次
 
@@ -50,7 +50,6 @@ GoFのストラテジーパターンの基本実装から、DIコンテナを活
   - [8. まとめ](#8-まとめ)
     - [パターン総合比較](#パターン総合比較)
   - [参考資料](#参考資料)
-
 
 ## 1. 問題提起：なぜif文ではダメなのか
 
@@ -155,7 +154,7 @@ public class Context
 }
 ```
 
-**利用例**
+**利用例**  
 
 ```csharp
 var context = new Context(new StrategyA());
@@ -166,14 +165,16 @@ context.SetStrategy(new StrategyB());
 context.ExecuteStrategy(); // Output: Bの処理
 ```
 
-**評価**
+**評価**  
 
 ✅ メリット:
+
 - 教科書的で理解しやすい
 - 動的な戦略切り替えが直感的
 - 共通の前後処理をContextに集約できる
 
 ❌ デメリット:
+
 - `new`演算子による密結合（DIが使えない）
 - テストしづらい（モック不可）
 - DIが当たり前の現代では冗長になりやすい
@@ -224,7 +225,7 @@ public class Application
 DIコンテナの普及により、Contextの役割のほとんどをコンテナ側が担うようになりました。
 
 | Contextの役割 | 現代の代替手段 | 理由 |
-|---|---|---|
+| --- | --- | --- |
 | 戦略の保持 | DIコンテナ | コンテナがライフタイム管理 |
 | 動的切り替え | StrategyContext/Factory | より明示的で柔軟 |
 | 共通処理 | Middleware/Decorator | 横断的関心事の分離 |
@@ -244,7 +245,6 @@ GoFのContext       → _strategyフィールドに状態を保持（ステー�
 GoF的なContextが有効な場面を現代の.NET開発で見つけようとすると、どのケースも別のパターンや仕組みで代替できてしまいます。状態に応じてリアルタイムに戦略を切り替えるケースはStateパターンの領域に近く、UIの状態管理はFlux/MVVM、権限制御はPolicyベース認可などが担います。Strategyパターンの文脈でGoF的なContextをあえて実装する理由は現代においてほぼ見当たりません。
 
 GoFのContextが担っていた「戦略を保持して実行する」という役割は、現代ではDIコンテナとStrategyContextが自然に引き受けています。Contextというクラスを明示的に作らなくても、その責務はすでに別の形で満たされています。
-
 
 ## 3. ステップ2：Factoryパターン（Simple Factory）の導入
 
@@ -288,7 +288,7 @@ public class StrategyFactory
 }
 ```
 
-**利用例**
+**利用例**  
 
 ```csharp
 var option = OptionType.B;
@@ -296,21 +296,22 @@ var strategy = StrategyFactory.Create(option);
 strategy.Execute(); // Output: Bの処理
 ```
 
-**評価**
+**評価**  
 
 ✅ メリット:
+
 - シンプルで理解しやすい
 - 実装が速い
 - パフォーマンスが良い
 
 ❌ デメリット:
+
 - `new`演算子による密結合（DI不可）
 - テストしづらい（モック不可）
 - Open/Closed原則違反（新しい戦略追加時にFactory修正必須）
 - 戦略が外部依存を持つ場合に対応できない
 
 プロトタイプや小規模スクリプトには十分なアプローチです。ただし戦略を`new`で生成する構造上、外部サービスへの依存やモックへの差し替えが必要になった途端に限界が来ます。次のステップでDIを導入して改善します。
-
 
 ## 4. ステップ3：IEnumerable注入 + StrategyContext方式（最推奨）
 
@@ -385,7 +386,7 @@ public class DataProcessingService
 
 :::details 本番を想定した実装（非同期・エラーハンドリング・インターフェース対応）
 
-**Enum・DTO定義**
+**Enum・DTO定義**  
 
 ```csharp
 public enum OptionType { A, B, C }
@@ -407,7 +408,7 @@ public record StrategyResponse(
 );
 ```
 
-**Strategy インターフェース（非同期対応）**
+**Strategy インターフェース（非同期対応）**  
 
 ```csharp
 public interface IStrategy
@@ -417,7 +418,7 @@ public interface IStrategy
 }
 ```
 
-**具体的な戦略実装**
+**具体的な戦略実装**  
 
 ```csharp
 public class StrategyA : IStrategy
@@ -459,7 +460,7 @@ public class StrategyA : IStrategy
 // StrategyB、StrategyCも同様の構造で実装する
 ```
 
-**StrategyContext（IServiceProvider不使用）**
+**StrategyContext（IServiceProvider不使用）**  
 
 ```csharp
 /// <summary>
@@ -510,7 +511,7 @@ public class StrategyContext : IStrategyContext
 }
 ```
 
-**DI登録**
+**DI登録**  
 
 ```csharp
 public static class ServiceCollectionExtensions
@@ -541,7 +542,7 @@ builder.Services.Configure<ServiceProviderOptions>(options =>
 });
 ```
 
-**使用例（コンボボックスのUI処理）**
+**使用例（コンボボックスのUI処理）**  
 
 ```csharp
 public class DataProcessingService
@@ -584,9 +585,10 @@ public class DataProcessingService
 
 :::
 
-**評価**
+**評価**  
 
 ✅ メリット:
+
 - IServiceProviderを一切使わない（最重要）
 - 完全にDI統合、テストが容易（モック可能）
 - Open/Closed原則準拠（戦略追加時にStrategyContextを修正不要）
@@ -594,10 +596,10 @@ public class DataProcessingService
 - .NETバージョン制約なし、非同期処理に対応
 
 ❌ デメリット:
+
 - 初期セットアップがやや複雑
 
 IEnumerable注入 + StrategyContext方式は、.NETのDIコンテナが標準でサポートしている機能であり、サービスロケーターを使わずに複数実装を扱う方法として.NETコミュニティで広く採用されているアプローチです。
-
 
 ## 5. ステップ4：Keyed Services（.NET 8以降）
 
@@ -682,7 +684,7 @@ enumキーによるマジックストリング排除や型安全はメリット�
 
 Keyed Servicesが真価を発揮するのは「このサービスには常にこの実装」という静的選択の場面です。コンパイル時点でどの戦略を使うかが決まっている場合、`[FromKeyedServices]`アノテーションで直接注入でき、FactoryもStrategyContextも不要です。
 
-**実装例**
+**実装例**  
 
 ```csharp
 // ✅ 各サービスが固定の戦略を直接受け取る（FactoryもStrategyContextも不要）
@@ -703,7 +705,7 @@ public class ProductOrderService
 }
 ```
 
-**静的選択が生きる具体例**
+**静的選択が生きる具体例**  
 
 次のような場合がこれに当たります。
 
@@ -722,7 +724,7 @@ public class ProductOrderService
 
 これらはすべて「どの実装を使うかがコンパイル時に決まっている」ケースです。コンボボックスのような動的選択とは別の世界線です。
 
-**動的選択 vs 静的選択**
+**動的選択 vs 静的選択**  
 
 ```txt
 動的な選択（本記事のメインユースケース）
@@ -732,7 +734,6 @@ public class ProductOrderService
   → サービスごとに使う実装が固定 → [FromKeyedServices]
   → コンパイル時に決定済み
 ```
-
 
 ## 6. コラム1：サービスロケーターパターン（なぜ避けるべきか）
 
@@ -760,7 +761,7 @@ public class OrderService
 
 ### なぜアンチパターンなのか
 
-**① 依存関係が隠蔽される**
+**① 依存関係が隠蔽される**  
 
 ```csharp
 // ❌ このクラスが何に依存しているか外から分からない
@@ -770,7 +771,7 @@ public OrderService(IServiceProvider serviceProvider) { }
 public OrderService(IStrategyContext context, ILogger<OrderService> logger) { }
 ```
 
-**② テストが困難**
+**② テストが困難**  
 
 `IServiceProvider`を直接注入すると、キー付きサービスの取得に使うメソッド（`GetRequiredKeyedService`）がMoqでSetupできない形式のため、モックを組むのが困難になります。
 
@@ -785,11 +786,11 @@ mockContext
 var service = new OrderService(mockContext.Object);
 ```
 
-**③ 実行時エラーのリスク**
+**③ 実行時エラーのリスク**  
 
 コンストラクタ注入では未登録のサービスはアプリ起動時に即エラーになります。サービスロケーターでは実行時まで問題に気づけません。
 
-**④ Single Responsibility Principle違反**
+**④ Single Responsibility Principle違反**  
 
 `OrderService`の本来の責務は「注文処理」のはずが、「サービスの解決」という余計な責務を持つことになります。
 
@@ -814,7 +815,6 @@ public class KeyedStrategyFactory
 }
 ```
 
-
 ## 7. コラム2：キャプティブ依存（ライフタイムの罠）
 
 ### キャプティブ依存とは
@@ -822,7 +822,7 @@ public class KeyedStrategyFactory
 .NETのDIには3つのライフタイムがあります。
 
 | ライフタイム | 生存期間 |
-|---|---|
+| --- | --- |
 | Singleton | アプリ起動から終了まで |
 | Scoped | HTTPリクエスト1件につき |
 | Transient | 要求のたびに新しいインスタンス |
@@ -863,7 +863,7 @@ public class StrategyContext
 
 ### 修正案の選び方
 
-**案A：戦略をSingletonにする**
+**案A：戦略をSingletonにする**  
 
 ```csharp
 services.AddSingleton<IStrategy, StrategyA>();
@@ -874,7 +874,7 @@ services.AddSingleton<IStrategyContext, StrategyContext>();
 
 ❌ `DbContext`や`HttpContext`などScopedなサービスを戦略内で使っている場合は使えません。
 
-**案B：StrategyContextをScopedにする**
+**案B：StrategyContextをScopedにする**  
 
 ```csharp
 services.AddTransient<IStrategy, StrategyA>();
@@ -885,7 +885,7 @@ services.AddScoped<IStrategyContext, StrategyContext>();
 
 ❌ `IHostedService`などScopedが使えない環境では注意が必要。
 
-**判断基準**
+**判断基準**  
 
 ```txt
 戦略クラスがDbContext / HttpContextなどScopedなサービスに依存する？
@@ -910,13 +910,12 @@ builder.Services.Configure<ServiceProviderOptions>(options =>
 
 開発・テスト環境では常に有効にしておくことを推奨します。
 
-
 ## 8. まとめ
 
 ### パターン総合比較
 
 | パターン | IServiceProvider | 依存明示性 | テスト容易性 | .NET要件 | 推奨度 |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | GoFパターン（Context） | 使わない | ⭐⭐ | ⭐ | すべて | 歴史的背景の理解用 |
 | Factoryパターン（Simple Factory） | 使わない | ⭐⭐ | ⭐ | すべて | 小規模のみ |
 | ✅ IEnumerable注入 + StrategyContext方式 | 使わない | ⭐⭐⭐ | ⭐⭐⭐ | すべて | **最推奨** |
@@ -926,7 +925,6 @@ builder.Services.Configure<ServiceProviderOptions>(options =>
 ストラテジーパターンはGoFの時代から本質は変わっていません。変わったのは「依存をどう管理するか」という手段です。
 
 迷ったらIEnumerable + StrategyContext方式を選んでください。それで解決しない問題が出たとき、初めて別の手段を検討してください。
-
 
 ## 参考資料
 
