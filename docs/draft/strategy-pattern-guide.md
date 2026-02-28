@@ -6,7 +6,7 @@
 
 ## この記事について
 
-GoFのストラテジーパターンの基本実装から、DIコンテナを活用した現代的な設計、.NET 8で導入されたKeyed Servicesの活用まで、「なぜそうするのか」を軸に段階的に解説します。
+GoFのストラテジーパターンの基本実装から、DIコンテナを活用した現代的な設計、.NET 8で導入されたKeyed Servicesの調査・研究まで、「なぜそうするのか」を軸に段階的に解説します。
 
 **対象読者**
 - C#/.NETの開発経験あり
@@ -16,14 +16,40 @@ GoFのストラテジーパターンの基本実装から、DIコンテナを活
 
 ## 目次
 
-1. [問題提起：なぜif文ではダメなのか](#1-問題提起なぜif文ではダメなのか)
-2. [ステップ1：GoF Contextパターン（歴史的背景）](#2-ステップ1gof-contextパターン歴史的背景)
-3. [ステップ2：Factoryパターン（Simple Factory）の導入](#3-ステップ2factoryパターンsimple-factoryの導入)
-4. [ステップ3：IEnumerable注入 + StrategyContext方式（最推奨）](#4-ステップ3ienumerable注入--strategycontext方式最推奨)
-5. [ステップ4：Keyed Services（.NET 8以降）](#5-ステップ4keyed-servicesnet-8以降)
-6. [コラム1：サービスロケーターパターン（なぜ避けるべきか）](#6-コラム1サービスロケーターパターンなぜ避けるべきか)
-7. [コラム2：キャプティブ依存（ライフタイムの罠）](#7-コラム2キャプティブ依存ライフタイムの罠)
-8. [まとめ](#8-まとめ)
+- [ストラテジーパターン実践ガイド](#ストラテジーパターン実践ガイド)
+  - [問題提起](#問題提起)
+  - [この記事について](#この記事について)
+  - [目次](#目次)
+  - [1. 問題提起：なぜif文ではダメなのか](#1-問題提起なぜif文ではダメなのか)
+    - [典型的なパターン](#典型的なパターン)
+  - [2. ステップ1：GoF Contextパターン（歴史的背景）](#2-ステップ1gof-contextパターン歴史的背景)
+    - [GoFの教科書的実装](#gofの教科書的実装)
+    - [GoF実装が抱える制約](#gof実装が抱える制約)
+      - [1. DIコンテナが存在しなかった](#1-diコンテナが存在しなかった)
+      - [2. 外部依存を持てない](#2-外部依存を持てない)
+      - [3. テストが書けない](#3-テストが書けない)
+    - [Contextクラスの存在意義と現代での位置づけ](#contextクラスの存在意義と現代での位置づけ)
+    - [GoF的なContextの行方](#gof的なcontextの行方)
+  - [3. ステップ2：Factoryパターン（Simple Factory）の導入](#3-ステップ2factoryパターンsimple-factoryの導入)
+  - [4. ステップ3：IEnumerable注入 + StrategyContext方式（最推奨）](#4-ステップ3ienumerable注入--strategycontext方式最推奨)
+    - [最小構成での実装](#最小構成での実装)
+    - [本番を想定した実装](#本番を想定した実装)
+  - [5. ステップ4：Keyed Services（.NET 8以降）](#5-ステップ4keyed-servicesnet-8以降)
+    - [最小構成での実装](#最小構成での実装-1)
+    - [動的選択への適用は推奨しない](#動的選択への適用は推奨しない)
+    - [Keyed Servicesの本来の価値（静的選択と\[FromKeyedServices\]）](#keyed-servicesの本来の価値静的選択とfromkeyedservices)
+  - [6. コラム1：サービスロケーターパターン（なぜ避けるべきか）](#6-コラム1サービスロケーターパターンなぜ避けるべきか)
+    - [絶対に避けるべきパターン](#絶対に避けるべきパターン)
+    - [なぜアンチパターンなのか](#なぜアンチパターンなのか)
+    - [IServiceProviderを使って良い唯一の例外](#iserviceproviderを使って良い唯一の例外)
+  - [7. コラム2：キャプティブ依存（ライフタイムの罠）](#7-コラム2キャプティブ依存ライフタイムの罠)
+    - [キャプティブ依存とは](#キャプティブ依存とは)
+    - [記事内の実装で潜む問題](#記事内の実装で潜む問題)
+    - [修正案の選び方](#修正案の選び方)
+    - [開発時の検出方法](#開発時の検出方法)
+  - [8. まとめ](#8-まとめ)
+    - [パターン総合比較](#パターン総合比較)
+  - [参考資料](#参考資料)
 
 
 ## 1. 問題提起：なぜif文ではダメなのか
@@ -208,7 +234,7 @@ Contextが担っていた「戦略の保持・選択・実行」という責務�
 
 ```txt
 GoFのContext       → _strategyフィールドに状態を保持（ステートフル）
-本記事のContext   → DIコンテナ経由で毎回解決してステートレス
+本記事のContext   → DIコンテナ経由で毎回解決（ステートレス）
 ```
 
 本記事ではこの現代的な実装をStrategyContextと呼びます。同じ構造をResolver・Factoryと呼ぶ実装も多く、命名に業界標準はありません。
@@ -381,7 +407,7 @@ public record StrategyResponse(
 );
 ```
 
-**Strategy インターフェース（非同期・検証対応）**
+**Strategy インターフェース（非同期対応）**
 
 ```csharp
 public interface IStrategy
@@ -644,26 +670,24 @@ public class DataProcessingService
 
 サンプルコードをご覧になってお気づきかもしれませんが、Keyed Servicesはenumをキーに「登録」することはできます。しかし「実行時」にキーを指定して「解決」する仕組みは提供されていません。
 
-戦略とキーを静的に紐づける`[FromKeyedServices]`アノテーションはありますが、これはコンパイル時に紐づけを確定させる機能です。コンボボックスのように実行時にキーが決まるケースには使えません。（詳細は次のセクションで解説します）
+戦略とキーを静的に紐づける`[FromKeyedServices]`というアノテーションがありますが、これはコンパイル時に紐づけを確定させる機能になります。コンボボックスのように実行時にキーが決まるケースには使えません。（詳細は次のセクションで解説します）
 
 動的解決にはIServiceProviderを直接使うほかなく、サービスロケーターパターンに陥ります。Factoryで隠蔽しても複雑になるだけで、enumキーが検索に貢献することもありません。動的選択においてKeyed Services方式を採用する理由はほぼありません。
 
 ### Keyed Servicesの本来の価値（静的選択と[FromKeyedServices]）
 
-Keyed Servicesが真価を発揮するのは「このサービスには常にこの実装」という静的選択の場面です。コンパイル時点でどの戦略を使うかが決まっている場合、`[FromKeyedServices]`属性で直接注入でき、FactoryもStrategyContextも不要です。
+Keyed Servicesが真価を発揮するのは「このサービスには常にこの実装」という静的選択の場面です。コンパイル時点でどの戦略を使うかが決まっている場合、`[FromKeyedServices]`アノテーションで直接注入でき、FactoryもStrategyContextも不要です。
 
 **実装例**
 
 ```csharp
 // ✅ 各サービスが固定の戦略を直接受け取る（FactoryもStrategyContextも不要）
-// ⚠️ Singletonサービスに短命な戦略を注入するとキャプティブ依存が発生する（コラム2参照）
 public class ProductOrderService
 {
     private readonly IStrategy _strategy;
 
     public ProductOrderService(
-        [FromKeyedServices(OptionType.A)] IStrategy strategy,
-        ILogger<ProductOrderService> logger)
+        [FromKeyedServices(OptionType.A)] IStrategy strategy)
     {
         _strategy = strategy;
     }
@@ -744,14 +768,12 @@ public OrderService(IStrategyContext context, ILogger<OrderService> logger) { }
 
 **② テストが困難**
 
-```csharp
-// ❌ IServiceProviderのモックは複雑で壊れやすい
-var mockProvider = new Mock<IServiceProvider>();
-mockProvider
-    .Setup(p => p.GetRequiredKeyedService<IStrategy>(OptionType.A))
-    .Returns(mockStrategy.Object);
+`IServiceProvider`を直接注入すると、キー付きサービスの取得に使うメソッド（`GetRequiredKeyedService`）がMoqでSetupできない形式のため、モックを組むのが困難になります。
 
-// ✅ シンプルにモック可能
+一方、`IStrategyContext`はインターフェースなのでMoqで直接Setupできます。
+
+```csharp
+// ✅ IStrategyContextはインターフェースなのでMoqで直接Setupできる
 var mockContext = new Mock<IStrategyContext>();
 mockContext
     .Setup(c => c.ExecuteAsync(OptionType.A, It.IsAny<StrategyRequest>()))
@@ -774,7 +796,7 @@ var service = new OrderService(mockContext.Object);
 ```csharp
 // ✅ Factoryクラス内でのみ許容される
 // IServiceProviderはこのFactoryクラスだけに閉じ込める
-public class KeyedStrategyFactory : IStrategyFactory
+public class KeyedStrategyFactory
 {
     private readonly IServiceProvider _serviceProvider;
 
@@ -894,7 +916,7 @@ builder.Services.Configure<ServiceProviderOptions>(options =>
 | GoFパターン（Context） | 使わない | ⭐⭐ | ⭐ | すべて | 歴史的背景の理解用 |
 | Factoryパターン（Simple Factory） | 使わない | ⭐⭐ | ⭐ | すべて | 小規模のみ |
 | ✅ IEnumerable注入 + StrategyContext方式 | 使わない | ⭐⭐⭐ | ⭐⭐⭐ | すべて | **最推奨** |
-| ✅ Keyed Services方式（動的選択） | Factory内のみ | ⭐⭐⭐ | ⭐⭐⭐ | 8以降 | 動的選択では不要 |
+| Keyed Services方式（動的選択） | Factory内のみ | ⭐⭐⭐ | ⭐⭐⭐ | 8以降 | 動的選択では不要 |
 | ✅ Keyed Services方式（静的選択） | 使わない | ⭐⭐⭐ | ⭐⭐⭐ | 8以降 | **静的選択に最推奨** |
 
 ストラテジーパターンはGoFの時代から本質は変わっていません。変わったのは「依存をどう管理するか」という手段です。
