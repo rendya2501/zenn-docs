@@ -3,7 +3,7 @@
 ## はじめに
 
 ある企業の技術試験で「コンボボックスの選択に応じてオブジェクト指向で処理を切り替えろ」というお題が出ました。  
-ストラテジーパターンを使って実装しましたが、後から振り返ると実装が未熟でした。  
+ストラテジーパターンを使って実装しましたが、後から振り返ると実装が未熟でした。
 
 その反省をもとに、GoFの基本実装からDIを活用した現代的な実装まで、「なぜそうするのか」を軸に自分なりに整理しなおしたのがこの記事です。
 
@@ -15,8 +15,7 @@
 
 ## 前提条件
 
-コンボボックスで `A`、`B`、`C` のような選択肢を選ぶUIにおいて、選択肢ごとに異なる処理を実装する状況を想定します。  
-以降のコード例はすべてこの状況を前提としています。  
+コンボボックスなどで `A`、`B`、`C` のような選択肢を選ぶUIにおいて、選択肢ごとに異なる処理を実装する状況を想定します。以降のコード例はすべてこの状況を前提としています。
 
 ## 目次
 
@@ -88,7 +87,7 @@ public void ProcessOrder(string orderType)
 
 これを解決するのが**ストラテジーパターン**です。  
 振る舞いをクラスとして切り出し、インターフェースを通じて交換可能にする——これがStrategyパターンの本質です。  
-次のステップから実装を追っていきましょう。  
+次のステップから実装を追っていきましょう。
 
 > **💡 ifがすべてダメというわけではない**
 >
@@ -99,7 +98,7 @@ public void ProcessOrder(string orderType)
 ### GoFの教科書的実装
 
 ストラテジーパターンの基本構造はこうなっています。  
-処理ごとに独立したクラスを用意し、共通のインターフェースで統一します。  
+処理ごとに独立したクラスを用意し、共通のインターフェースで統一します。
 
 ```mermaid
 classDiagram
@@ -199,13 +198,11 @@ context.ExecuteStrategy(); // Output: Bの処理
 ### GoF実装が抱える制約
 
 教科書通りの実装なのに、現代のプロジェクトでそのまま見かけることはほぼありません。  
-理由はGoFパターンが生まれた当時と現代では前提条件が大きく異なるからです。  
+理由はGoFパターンが生まれた当時と現代では前提条件が大きく異なるからです。
 
 #### 1. DIコンテナが存在しなかった
 
-GoFが書かれた1994年当時、DIコンテナは存在しませんでした。  
-依存するオブジェクトは自分で`new`するのが当たり前であり、上記の実装はその制約の中での最善でした。  
-現代では依存関係の管理はDIコンテナが担うため、`new`で生成する構造は設計上の制約になります。  
+GoFが書かれた1994年当時、DIコンテナは存在しませんでした。依存するオブジェクトは自分で`new`するのが当たり前であり、上記の実装はその制約の中での最善でした。現代では依存関係の管理はDIコンテナが担うため、`new`で生成する構造は設計上の制約になります。
 
 #### 2. 外部依存を持てない
 
@@ -251,29 +248,30 @@ DIコンテナの普及により、Contextの役割のほとんどをコンテ�
 | 共通処理 | Middleware/Decorator | 横断的関心事の分離 |
 | 依存性の隠蔽 | DIによる注入 | 疎結合が自然に実現 |
 
-Contextが担っていた「戦略の保持・選択・実行」という責務自体は現代でも変わりません。変わったのはその実現手段です。  
+Contextが担っていた「戦略の保持・選択・実行」という責務自体は現代でも変わりません。  
+変わったのはその実現手段です。
 
 ```txt
-GoFのContext       → _strategyフィールドに状態を保持（ステートフル）
-本記事のContext   → DIコンテナ経由で毎回解決（ステートレス）
+GoFのContext       → _strategyフィールドに状態を保持(ステートフル)
+本記事のContext   → DIコンテナ経由で毎回解決(ステートレス)
 ```
 
 本記事ではこの現代的な実装をStrategyContextと呼びます。  
-同じ構造をResolver・Factoryと呼ぶ実装も多く、命名に業界標準はありません。  
+同じ構造をResolver・Factoryと呼ぶ実装も多く、命名に業界標準はありません。
 
 ### GoF的なContextの行方
 
 GoF的なContextが有効な場面を現代の.NET開発で見つけようとすると、どのケースも別のパターンや仕組みで代替できてしまいます。  
 状態に応じてリアルタイムに戦略を切り替えるケースはStateパターンの領域に近く、UIの状態管理はFlux/MVVM、権限制御はPolicyベース認可などが担います。  
-Strategyパターンの文脈でGoF的なContextをあえて実装する理由は現代においてほぼ見当たりません。  
+Strategyパターンの文脈でGoF的なContextをあえて実装する理由は現代においてほぼ見当たりません。
 
 GoFのContextが担っていた「戦略を保持して実行する」という役割は、現代ではDIコンテナとStrategyContextが自然に引き受けています。  
-Contextというクラスを明示的に作らなくても、その責務はすでに別の形で満たされています。  
+Contextというクラスを明示的に作らなくても、その責務はすでに別の形で満たされています。
 
 ## 3. ステップ2：Factoryパターン(Simple Factory)の導入
 
 Factoryパターン(Simple Factory)はContextクラスを必要とせず、「選択肢に応じた戦略を返す」という責務を1か所に集約します。  
-enumを渡せばそれに応じた戦略が返ってくる——選択肢に応じた処理を呼び出せれば十分なケースで有効です。  
+enumを渡せばそれに応じた戦略が返ってくる——選択肢に応じた処理を呼び出せれば十分なケースで有効です。
 
 ```csharp
 public enum OptionType { A, B, C }
@@ -336,9 +334,7 @@ strategy.Execute(); // Output: Bの処理
 - Open/Closed原則違反(新しい戦略追加時にFactory修正必須)
 - 戦略が外部依存を持つ場合に対応できない
 
-プロトタイプや小規模スクリプトには十分なアプローチです。  
-ただし戦略を`new`で生成する構造上、外部サービスへの依存やモックへの差し替えが必要になった途端に限界が来ます。  
-次のステップでDIを導入して改善します。  
+プロトタイプや小規模スクリプトには十分なアプローチです。ただし戦略を`new`で生成する構造上、外部サービスへの依存やモックへの差し替えが必要になった途端に限界が来ます。次のステップでDIを導入して改善します。
 
 ## 4. ステップ3：IEnumerable注入 + StrategyContext方式(最推奨)
 
@@ -346,7 +342,8 @@ strategy.Execute(); // Output: Bの処理
 
 ### 最小構成での実装
 
-詳細実装に入る前に、構造全体を掴んでおきましょう。本質はこれだけです。
+詳細実装に入る前に、構造全体を掴んでおきましょう。  
+本質はこれだけです。
 
 ```csharp
 // 選択肢をenumで定義する
@@ -404,7 +401,7 @@ public class DataProcessingService
 ```
 
 構造は「インターフェース → 各実装 → StrategyContext → DI登録 → 利用側」の5ステップです。  
-以降はこれを本番を想定した実装に近づけていきます。  
+以降はこれを本番を想定した実装に近づけていきます。
 
 > **💡 StrategyContextの責務について**
 >
@@ -550,7 +547,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IStrategy, StrategyB>();
         services.AddTransient<IStrategy, StrategyC>();
 
-        // ⚠️ ライフタイムの整合性に注意（コラム2参照）
+        // ⚠️ ライフタイムの整合性に注意(コラム2参照)
         services.AddScoped<IStrategyContext, StrategyContext>();
 
         return services;
@@ -560,7 +557,7 @@ public static class ServiceCollectionExtensions
 // Program.csでの使用例
 builder.Services.AddStrategies();
 
-// 開発環境でのキャプティブ依存検出（コラム2参照）
+// 開発環境でのキャプティブ依存検出(コラム2参照)
 // ⚠️ builder.Environment はASP.NET Core固有です。
 // コンソールアプリ・Blazor・MAUIなどでは IHostEnvironment.IsDevelopment() を使用してください。
 builder.Services.Configure<ServiceProviderOptions>(options =>
@@ -679,7 +676,7 @@ public class KeyedStrategyContext
 services.AddSingleton<KeyedStrategyFactory>();
 services.AddScoped<KeyedStrategyContext>();
 
-// ⑤ 使う側はStrategyContextを受け取るだけ（ステップ3と同じ）
+// ⑤ 使う側はStrategyContextを受け取るだけ(ステップ3と同じ)
 public class DataProcessingService
 {
     private readonly KeyedStrategyContext _context;
@@ -698,7 +695,8 @@ public class DataProcessingService
 
 ### 動的選択への適用は推奨しない
 
-Keyed ServicesはenumをキーにしてDI登録できますが、動的選択には不向きです。理由は2つあります。
+Keyed ServicesはenumをキーにしてDI登録できますが、動的選択には不向きです。  
+理由は2つあります。
 
 ① 複雑性が増す — サービスロケーターパターンが伴う
 
@@ -717,7 +715,7 @@ Keyed Servicesが真価を発揮するのは「このサービスには常にこ
 **実装例**  
 
 ```csharp
-// ✅ 各サービスが固定の戦略を直接受け取る（FactoryもStrategyContextも不要）
+// ✅ 各サービスが固定の戦略を直接受け取る(FactoryもStrategyContextも不要)
 public class ProductOrderService
 {
     private readonly IStrategy _strategy;
@@ -752,15 +750,16 @@ public class ProductOrderService
   → OrderServiceは常にStripePaymentStrategy
 ```
 
-これらはすべて「どの実装を使うかがコンパイル時に決まっている」ケースです。コンボボックスのような動的選択とは別の世界線です。
+これらはすべて「どの実装を使うかがコンパイル時に決まっている」ケースです。  
+コンボボックスのような動的選択とは別の世界線です。
 
 **動的選択 vs 静的選択**  
 
 ```txt
-動的な選択（本記事のメインユースケース）
-  → ユーザーがUI操作で選ぶ → StrategyContext方式（ステップ3）
+動的な選択(本記事のメインユースケース)
+  → ユーザーがUI操作で選ぶ → StrategyContext方式(ステップ3)
 
-静的な選択（Keyed Servicesの本来の価値）
+静的な選択(Keyed Servicesの本来の価値)
   → サービスごとに使う実装が固定 → [FromKeyedServices]
   → コンパイル時に決定済み
 ```
@@ -770,7 +769,7 @@ public class ProductOrderService
 ### 絶対に避けるべきパターン
 
 ```csharp
-// ❌ サービスロケーターパターン（現代では避けるべき）
+// ❌ サービスロケーターパターン(現代では避けるべき)
 public class OrderService
 {
     private readonly IServiceProvider _serviceProvider;
@@ -818,7 +817,8 @@ var service = new OrderService(mockContext.Object);
 
 **③ 実行時エラーのリスク**  
 
-コンストラクタ注入では未登録のサービスはアプリ起動時に即エラーになります。サービスロケーターでは実行時まで問題に気づけません。
+コンストラクタ注入では未登録のサービスはアプリ起動時に即エラーになります。  
+サービスロケーターでは実行時まで問題に気づけません。
 
 **④ Single Responsibility Principle違反**  
 
@@ -826,7 +826,8 @@ var service = new OrderService(mockContext.Object);
 
 ### IServiceProviderを使って良い唯一の例外
 
-**Infrastructure層のFactoryクラス内のみ**許容されます。Factoryはその本来の責務が「サービスの解決と生成」であるため正当化されます。
+**Infrastructure層のFactoryクラス内のみ**許容されます。  
+Factoryはその本来の責務が「サービスの解決と生成」であるため正当化されます。
 
 ```csharp
 // ✅ Factoryクラス内でのみ許容される
@@ -919,8 +920,8 @@ services.AddScoped<IStrategyContext, StrategyContext>();
 
 ```txt
 戦略クラスがDbContext / HttpContextなどScopedなサービスに依存する？
-├─ YES → 案B（Scoped）：Webアプリの標準的なケース
-└─ NO（ピュアなロジックのみ）→ 案A（Singleton）：シンプルで効率的
+├─ YES → 案B(Scoped)：Webアプリの標準的なケース
+└─ NO(ピュアなロジックのみ)→ 案A(Singleton)：シンプルで効率的
 ```
 
 コンボボックス選択に基づく処理はDBアクセスが伴うことが多いため、**本記事のメインユースケースでは案Bが安全です。**
@@ -952,9 +953,12 @@ builder.Services.Configure<ServiceProviderOptions>(options =>
 | Keyed Services方式(動的選択) | Factory内のみ | ⭐⭐⭐ | ⭐⭐⭐ | 8以降 | 動的選択では不要 |
 | ✅ Keyed Services方式(静的選択) | 使わない | ⭐⭐⭐ | ⭐⭐⭐ | 8以降 | **静的選択に最推奨** |
 
-ストラテジーパターンはGoFの時代から本質は変わっていません。変わったのは「依存をどう管理するか」という手段です。
+ストラテジーパターンはGoFの時代から本質は変わっていません。  
+変わったのは「依存をどう管理するか」という手段です。
 
-Strategyパターンの目的はifを消すことではありません。目的は「変更理由を分離すること」です。選択肢が増える、仕様が変わる、外部依存が変わる——そういった変更が起きやすい箇所にこそ、Strategyは力を発揮します。
+Strategyパターンの目的はifを消すことではありません。  
+目的は「変更理由を分離すること」です。  
+選択肢が増える、仕様が変わる、外部依存が変わる——そういった変更が起きやすい箇所にこそ、Strategyは力を発揮します。
 
 ## 参考資料
 
