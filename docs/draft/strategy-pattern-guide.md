@@ -8,7 +8,7 @@
 
 GoFのストラテジーパターンの基本実装から、DIコンテナを活用した現代的な設計、.NET 8で導入されたKeyed Servicesの調査・研究まで、「なぜそうするのか」を軸に段階的に解説します。
 
-**対象読者*  
+**対象読者**  
 
 - C#/.NETの開発経験あり
 - DIコンテナの基本的な使い方を知っている
@@ -22,7 +22,7 @@ GoFのストラテジーパターンの基本実装から、DIコンテナを活
   - [目次](#目次)
   - [1. 問題提起：なぜif文ではダメなのか](#1-問題提起なぜif文ではダメなのか)
     - [典型的なパターン](#典型的なパターン)
-  - [2. ステップ1：GoF ストラテジーパターン（歴史的背景）](#2-ステップ1gof-ストラテジーパターン歴史的背景)
+  - [2. ステップ1：GoF ストラテジーパターン(歴史的背景)](#2-ステップ1gof-ストラテジーパターン歴史的背景)
     - [GoFの教科書的実装](#gofの教科書的実装)
     - [GoF実装が抱える制約](#gof実装が抱える制約)
       - [1. DIコンテナが存在しなかった](#1-diコンテナが存在しなかった)
@@ -30,19 +30,19 @@ GoFのストラテジーパターンの基本実装から、DIコンテナを活
       - [3. テストが書けない](#3-テストが書けない)
     - [Contextクラスの存在意義と現代での位置づけ](#contextクラスの存在意義と現代での位置づけ)
     - [GoF的なContextの行方](#gof的なcontextの行方)
-  - [3. ステップ2：Factoryパターン（Simple Factory）の導入](#3-ステップ2factoryパターンsimple-factoryの導入)
-  - [4. ステップ3：IEnumerable注入 + StrategyContext方式（最推奨）](#4-ステップ3ienumerable注入--strategycontext方式最推奨)
+  - [3. ステップ2：Factoryパターン(Simple Factory)の導入](#3-ステップ2factoryパターンsimple-factoryの導入)
+  - [4. ステップ3：IEnumerable注入 + StrategyContext方式(最推奨)](#4-ステップ3ienumerable注入--strategycontext方式最推奨)
     - [最小構成での実装](#最小構成での実装)
     - [本番を想定した実装](#本番を想定した実装)
-  - [5. ステップ4：Keyed Services（.NET 8以降）](#5-ステップ4keyed-servicesnet-8以降)
+  - [5. ステップ4：Keyed Services(.NET 8以降)](#5-ステップ4keyed-servicesnet-8以降)
     - [最小構成での実装](#最小構成での実装-1)
     - [動的選択への適用は推奨しない](#動的選択への適用は推奨しない)
-    - [Keyed Servicesの本来の価値（静的選択と\[FromKeyedServices\]）](#keyed-servicesの本来の価値静的選択とfromkeyedservices)
-  - [6. コラム1：サービスロケーターパターン（なぜ避けるべきか）](#6-コラム1サービスロケーターパターンなぜ避けるべきか)
+    - [Keyed Servicesの本来の価値(静的選択と\[FromKeyedServices\])](#keyed-servicesの本来の価値静的選択とfromkeyedservices)
+  - [6. コラム1：サービスロケーターパターン(なぜ避けるべきか)](#6-コラム1サービスロケーターパターンなぜ避けるべきか)
     - [絶対に避けるべきパターン](#絶対に避けるべきパターン)
     - [なぜアンチパターンなのか](#なぜアンチパターンなのか)
     - [IServiceProviderを使って良い唯一の例外](#iserviceproviderを使って良い唯一の例外)
-  - [7. コラム2：キャプティブ依存（ライフタイムの罠）](#7-コラム2キャプティブ依存ライフタイムの罠)
+  - [7. コラム2：キャプティブ依存(ライフタイムの罠)](#7-コラム2キャプティブ依存ライフタイムの罠)
     - [キャプティブ依存とは](#キャプティブ依存とは)
     - [記事内の実装で潜む問題](#記事内の実装で潜む問題)
     - [修正案の選び方](#修正案の選び方)
@@ -74,9 +74,9 @@ public void ProcessOrder(string orderType)
 }
 ```
 
-**問題点:**
+**問題点:**  
 
-❌ **Open/Closed原則違反（OCP）:** 新しい選択肢Dを追加するたびにこのメソッドを修正しなければならず、既存動作が壊れるリスクが生まれます。
+❌ **Open/Closed原則違反(OCP):** 新しい選択肢Dを追加するたびにこのメソッドを修正しなければならず、既存動作が壊れるリスクが生まれます。
 
 ❌ **テストの困難さ:** Aの処理だけを単独でテストできません。
 
@@ -88,7 +88,7 @@ public void ProcessOrder(string orderType)
 >
 > 分岐が2〜3個で今後増えない見込みなら、シンプルなifのままで十分です。Strategyが力を発揮するのは、選択肢が増える・仕様が変わるといった変更が起きやすい箇所です。
 
-## 2. ステップ1：GoF ストラテジーパターン（歴史的背景）
+## 2. ステップ1：GoF ストラテジーパターン(歴史的背景)
 
 ### GoFの教科書的実装
 
@@ -179,8 +179,8 @@ context.ExecuteStrategy(); // Output: Bの処理
 
 ❌ デメリット:
 
-- `new`演算子による密結合（DIが使えない）
-- テストしづらい（モック不可）
+- `new`演算子による密結合(DIが使えない)
+- テストしづらい(モック不可)
 - DIが当たり前の現代では冗長になりやすい
 
 ### GoF実装が抱える制約
@@ -250,9 +250,9 @@ GoF的なContextが有効な場面を現代の.NET開発で見つけようとす
 
 GoFのContextが担っていた「戦略を保持して実行する」という役割は、現代ではDIコンテナとStrategyContextが自然に引き受けています。Contextというクラスを明示的に作らなくても、その責務はすでに別の形で満たされています。
 
-## 3. ステップ2：Factoryパターン（Simple Factory）の導入
+## 3. ステップ2：Factoryパターン(Simple Factory)の導入
 
-Factoryパターン（Simple Factory）はContextクラスを必要とせず、「選択肢に応じた戦略を返す」という責務を1か所に集約します。enumを渡せばそれに応じた戦略が返ってくる——選択肢に応じた処理を呼び出せれば十分なケースで有効です。
+Factoryパターン(Simple Factory)はContextクラスを必要とせず、「選択肢に応じた戦略を返す」という責務を1か所に集約します。enumを渡せばそれに応じた戦略が返ってくる——選択肢に応じた処理を呼び出せれば十分なケースで有効です。
 
 ```csharp
 public enum OptionType { A, B, C }
@@ -310,14 +310,14 @@ strategy.Execute(); // Output: Bの処理
 
 ❌ デメリット:
 
-- `new`演算子による密結合（DI不可）
-- テストしづらい（モック不可）
-- Open/Closed原則違反（新しい戦略追加時にFactory修正必須）
+- `new`演算子による密結合(DI不可)
+- テストしづらい(モック不可)
+- Open/Closed原則違反(新しい戦略追加時にFactory修正必須)
 - 戦略が外部依存を持つ場合に対応できない
 
 プロトタイプや小規模スクリプトには十分なアプローチです。ただし戦略を`new`で生成する構造上、外部サービスへの依存やモックへの差し替えが必要になった途端に限界が来ます。次のステップでDIを導入して改善します。
 
-## 4. ステップ3：IEnumerable注入 + StrategyContext方式（最推奨）
+## 4. ステップ3：IEnumerable注入 + StrategyContext方式(最推奨)
 
 コンボボックスの「動的選択」に対応する、現代的なDI実装のメインパターンです。
 
@@ -388,7 +388,7 @@ public class DataProcessingService
 
 ### 本番を想定した実装
 
-:::details 本番を想定した実装（非同期・エラーハンドリング・インターフェース対応）
+:::details 本番を想定した実装(非同期・エラーハンドリング・インターフェース対応)
 
 **Enum・DTO定義**  
 
@@ -412,7 +412,7 @@ public record StrategyResponse(
 );
 ```
 
-**Strategy インターフェース（非同期対応）**  
+**Strategy インターフェース(非同期対応)**  
 
 ```csharp
 public interface IStrategy
@@ -464,7 +464,7 @@ public class StrategyA : IStrategy
 // StrategyB、StrategyCも同様の構造で実装する
 ```
 
-**StrategyContext（IServiceProvider不使用）**  
+**StrategyContext(IServiceProvider不使用)**  
 
 ```csharp
 /// <summary>
@@ -546,7 +546,7 @@ builder.Services.Configure<ServiceProviderOptions>(options =>
 });
 ```
 
-**使用例（コンボボックスのUI処理）**  
+**使用例(コンボボックスのUI処理)**  
 
 ```csharp
 public class DataProcessingService
@@ -583,9 +583,9 @@ public class DataProcessingService
 
 > **💡 TransientとDictionaryキャッシュについて**
 >
-> 戦略をTransientで登録していますが、StrategyContextはコンストラクタで受け取った`IEnumerable<IStrategy>`をDictionaryにキャッシュします。そのためScopedなStrategyContext内では、リクエストの間は同じ戦略インスタンスが使い回されます（事実上Scopedと同じ動作）。
+> 戦略をTransientで登録していますが、StrategyContextはコンストラクタで受け取った`IEnumerable<IStrategy>`をDictionaryにキャッシュします。そのためScopedなStrategyContext内では、リクエストの間は同じ戦略インスタンスが使い回されます(事実上Scopedと同じ動作)。
 >
-> これ自体は多くの場合問題ありませんが、戦略クラスがリクエストをまたいで状態を持つ設計の場合は注意が必要です。戦略をステートレス（状態を持たない）に保つことで、この挙動は安全になります。
+> これ自体は多くの場合問題ありませんが、戦略クラスがリクエストをまたいで状態を持つ設計の場合は注意が必要です。戦略をステートレス(状態を持たない)に保つことで、この挙動は安全になります。
 
 :::
 
@@ -593,9 +593,9 @@ public class DataProcessingService
 
 ✅ メリット:
 
-- IServiceProviderを一切使わない（最重要）
-- 完全にDI統合、テストが容易（モック可能）
-- Open/Closed原則準拠（戦略追加時にStrategyContextを修正不要）
+- IServiceProviderを一切使わない(最重要)
+- 完全にDI統合、テストが容易(モック可能)
+- Open/Closed原則準拠(戦略追加時にStrategyContextを修正不要)
 - 各戦略が独立してテスト可能
 - .NETバージョン制約なし、非同期処理に対応
 
@@ -605,12 +605,12 @@ public class DataProcessingService
 
 IEnumerable注入 + StrategyContext方式は、.NETのDIコンテナが標準でサポートしている機能であり、サービスロケーターを使わずに複数実装を扱う方法として.NETコミュニティで広く採用されているアプローチです。
 
-## 5. ステップ4：Keyed Services（.NET 8以降）
+## 5. ステップ4：Keyed Services(.NET 8以降)
 
 > **このステップについて**
 > このステップは .NET 8で追加されたKeyed Servicesの調査・研究を目的としたステップです。実用的な実装としてはステップ3の方式で十分です。そのため、最小構成での実装と説明のみとし、本番を想定した実装は行いません。
 
-.NET 8で導入された機能で、`AddKeyedTransient` / `AddKeyedScoped` / `AddKeyedSingleton`という登録メソッドが追加され、同じインターフェースの実装をキー（今回はenum）で区別して登録・解決できるようになりました。
+.NET 8で導入された機能で、`AddKeyedTransient` / `AddKeyedScoped` / `AddKeyedSingleton`という登録メソッドが追加され、同じインターフェースの実装をキー(今回はenum)で区別して登録・解決できるようになりました。
 
 ### 最小構成での実装
 
@@ -678,8 +678,7 @@ Keyed ServicesはenumをキーにしてDI登録できますが、動的選択に
 
 ① 複雑性が増す — サービスロケーターパターンが伴う
 
-キーを指定した解決には`IServiceProvider`の`GetRequiredKeyedService`を使うほかなく、広義のサービスロケーターパターンに陥ります。  
-これを避けるためにFactoryで隠蔽すると、ステップ3より複雑な構造になります。
+キーを指定した解決には`IServiceProvider`の`GetRequiredKeyedService`を使うほかなく、広義のサービスロケーターパターンに陥ります。これを避けるためにFactoryで隠蔽すると、ステップ3より複雑な構造になります。
 
 ② 優位性がない — ステップ3で十分
 
@@ -687,10 +686,9 @@ enumキーによるマジックストリング排除や型安全はメリット�
 
 以上の理由から、動的選択においてKeyed Services方式を採用する理由はほぼありません。
 
-### Keyed Servicesの本来の価値（静的選択と[FromKeyedServices]）
+### Keyed Servicesの本来の価値(静的選択と[FromKeyedServices])
 
-Keyed Servicesが真価を発揮するのは「このサービスには常にこの実装」という静的選択の場面です。  
-コンパイル時点でどの戦略を使うかが決まっている場合、`[FromKeyedServices]`アノテーションで直接注入でき、FactoryもStrategyContextも不要です。
+Keyed Servicesが真価を発揮するのは「このサービスには常にこの実装」という静的選択の場面です。コンパイル時点でどの戦略を使うかが決まっている場合、`[FromKeyedServices]`アノテーションで直接注入でき、FactoryもStrategyContextも不要です。
 
 **実装例**  
 
@@ -743,7 +741,7 @@ public class ProductOrderService
   → コンパイル時に決定済み
 ```
 
-## 6. コラム1：サービスロケーターパターン（なぜ避けるべきか）
+## 6. コラム1：サービスロケーターパターン(なぜ避けるべきか)
 
 ### 絶対に避けるべきパターン
 
@@ -781,7 +779,7 @@ public OrderService(IStrategyContext context, ILogger<OrderService> logger) { }
 
 **② テストが困難**  
 
-`IServiceProvider`を直接注入すると、キー付きサービスの取得に使うメソッド（`GetRequiredKeyedService`）がMoqでSetupできない形式のため、モックを組むのが困難になります。
+`IServiceProvider`を直接注入すると、キー付きサービスの取得に使うメソッド(`GetRequiredKeyedService`)がMoqでSetupできない形式のため、モックを組むのが困難になります。
 
 一方、`IStrategyContext`はインターフェースなのでMoqで直接Setupできます。
 
@@ -823,7 +821,7 @@ public class KeyedStrategyFactory
 }
 ```
 
-## 7. コラム2：キャプティブ依存（ライフタイムの罠）
+## 7. コラム2：キャプティブ依存(ライフタイムの罠)
 
 ### キャプティブ依存とは
 
@@ -835,7 +833,7 @@ public class KeyedStrategyFactory
 | Scoped | HTTPリクエスト1件につき |
 | Transient | 要求のたびに新しいインスタンス |
 
-**キャプティブ依存**とは、長命なオブジェクト（Singleton）が短命なオブジェクト（Transient/Scoped）をコンストラクタでキャプチャして保持し続けることです。
+**キャプティブ依存**とは、長命なオブジェクト(Singleton)が短命なオブジェクト(Transient/Scoped)をコンストラクタでキャプチャして保持し続けることです。
 
 ### 記事内の実装で潜む問題
 
@@ -859,7 +857,7 @@ public class StrategyContext
 }
 ```
 
-戦略クラスがScopedなサービス（`DbContext`など）に依存していると、最初のリクエスト時のDbContextがSingleton内に閉じ込められ、以降のリクエストでも同じインスタンスが使い回されます。
+戦略クラスがScopedなサービス(`DbContext`など)に依存していると、最初のリクエスト時のDbContextがSingleton内に閉じ込められ、以降のリクエストでも同じインスタンスが使い回されます。
 
 ```txt
 リクエスト1: StrategyA(DbContext#1) がSingletonに保存される
@@ -878,7 +876,7 @@ services.AddSingleton<IStrategy, StrategyA>();
 services.AddSingleton<IStrategyContext, StrategyContext>();
 ```
 
-✅ 戦略クラスが外部依存を持たない（ピュアな計算ロジックのみ）場合に有効で効率的。
+✅ 戦略クラスが外部依存を持たない(ピュアな計算ロジックのみ)場合に有効で効率的。
 
 ❌ `DbContext`や`HttpContext`などScopedなサービスを戦略内で使っている場合は使えません。
 
@@ -889,7 +887,7 @@ services.AddTransient<IStrategy, StrategyA>();
 services.AddScoped<IStrategyContext, StrategyContext>();
 ```
 
-✅ 戦略クラスがDBや外部サービスに依存する場合（Webアプリで一般的）に安全。
+✅ 戦略クラスがDBや外部サービスに依存する場合(Webアプリで一般的)に安全。
 
 ❌ `IHostedService`などScopedが使えない環境では注意が必要。
 
@@ -925,10 +923,10 @@ builder.Services.Configure<ServiceProviderOptions>(options =>
 | パターン | IServiceProvider | 依存明示性 | テスト容易性 | .NET要件 | 推奨度 |
 | --- | --- | --- | --- | --- | --- |
 | GoF ストラテジーパターン | 使わない | ⭐⭐ | ⭐ | すべて | 歴史的背景の理解用 |
-| Factoryパターン（Simple Factory） | 使わない | ⭐⭐ | ⭐ | すべて | 小規模のみ |
+| Factoryパターン(Simple Factory) | 使わない | ⭐⭐ | ⭐ | すべて | 小規模のみ |
 | ✅ IEnumerable注入 + StrategyContext方式 | 使わない | ⭐⭐⭐ | ⭐⭐⭐ | すべて | **最推奨** |
-| Keyed Services方式（動的選択） | Factory内のみ | ⭐⭐⭐ | ⭐⭐⭐ | 8以降 | 動的選択では不要 |
-| ✅ Keyed Services方式（静的選択） | 使わない | ⭐⭐⭐ | ⭐⭐⭐ | 8以降 | **静的選択に最推奨** |
+| Keyed Services方式(動的選択) | Factory内のみ | ⭐⭐⭐ | ⭐⭐⭐ | 8以降 | 動的選択では不要 |
+| ✅ Keyed Services方式(静的選択) | 使わない | ⭐⭐⭐ | ⭐⭐⭐ | 8以降 | **静的選択に最推奨** |
 
 ストラテジーパターンはGoFの時代から本質は変わっていません。変わったのは「依存をどう管理するか」という手段です。
 
@@ -939,7 +937,7 @@ Strategyパターンの目的はifを消すことではありません。目的�
 - [Microsoft Docs - Dependency Injection in .NET](https://learn.microsoft.com/ja-jp/dotnet/core/extensions/dependency-injection)
 - [Microsoft Docs - .NET 8 Keyed Services](https://learn.microsoft.com/ja-jp/dotnet/core/extensions/dependency-injection#keyed-services)
 - [Strategy Pattern - Refactoring Guru](https://refactoring.guru/design-patterns/strategy)
-- [Design Patterns: Elements of Reusable Object-Oriented Software](https://www.amazon.co.jp/dp/0201633612)（GoF本）
-- [Strategy Pattern with Dependency Injection in C#](https://medium.com/@pureniyapelletier/strategy-pattern-with-dependency-injection-in-c-ec5b10fe2d8a)（Medium）
-- [Using the Strategy Pattern with Dependency Injection](https://dev.to/juliusmh/using-the-strategy-pattern-with-dependency-injection-4g9g)（DEV Community）
-- [Strategy Pattern in .NET with Keyed Services](https://medium.com/@codewithankur/strategy-pattern-in-net-with-keyed-services-52b0d1a2ef5b)（Medium・Keyed Services実装例）
+- [Design Patterns: Elements of Reusable Object-Oriented Software](https://www.amazon.co.jp/dp/0201633612)(GoF本)
+- [Strategy Pattern with Dependency Injection in C#](https://medium.com/@pureniyapelletier/strategy-pattern-with-dependency-injection-in-c-ec5b10fe2d8a)(Medium)
+- [Using the Strategy Pattern with Dependency Injection](https://dev.to/juliusmh/using-the-strategy-pattern-with-dependency-injection-4g9g)(DEV Community)
+- [Strategy Pattern in .NET with Keyed Services](https://medium.com/@codewithankur/strategy-pattern-in-net-with-keyed-services-52b0d1a2ef5b)(Medium・Keyed Services実装例)
