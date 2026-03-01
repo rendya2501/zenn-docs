@@ -96,6 +96,11 @@ public void ProcessOrder(string orderType)
 
 ```mermaid
 classDiagram
+    class Context {
+        -IStrategy _strategy
+        +SetStrategy(IStrategy)
+        +ExecuteStrategy()
+    }
     class IStrategy {
         <<interface>>
         +Execute()
@@ -109,6 +114,7 @@ classDiagram
     class StrategyC {
         +Execute()
     }
+    Context o-- IStrategy
     IStrategy <|.. StrategyA
     IStrategy <|.. StrategyB
     IStrategy <|.. StrategyC
