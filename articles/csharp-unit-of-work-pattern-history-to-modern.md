@@ -1,5 +1,5 @@
 ---
-title: "C#における Unit of Work 研究ノート：歴史から現代の実装まで"
+title: ".NETにおける Unit of Work 研究ノート：歴史から現代の実装まで"
 emoji: "📚"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["csharp","dotnet","デザインパターン","architecture","Entity Framework"]
