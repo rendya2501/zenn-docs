@@ -181,8 +181,21 @@ GoFが書かれた1994年当時、DIコンテナは存在しませんでした�
 戦略クラスを`new`で生成する構造では、DBアクセスや外部APIといった依存を戦略に持たせることができません。
 
 ```csharp
-// ❌ newで生成するため、DbContextを注入できない
-var context = new Context(new StrategyA()); // StrategyAにDbContextを渡せない
+// ❌ DbContextに依存するStrategyAを作りたいが…
+public class StrategyA : IStrategy
+{
+    private readonly AppDbContext _db;
+
+    public StrategyA(AppDbContext db) // コンストラクタ引数が必要
+    {
+        _db = db;
+    }
+
+    public void Execute() { /* DB処理 */ }
+}
+
+// 呼び出し側でnewするとき、DbContextを渡す手段がない
+var context = new Context(new StrategyA()); // ← AppDbContextを渡せない
 ```
 
 #### 3. テストが書けない
@@ -929,6 +942,8 @@ builder.Services.Configure<ServiceProviderOptions>(options =>
 | ✅ IEnumerable注入 + StrategyContext方式 | 使わない | ⭐⭐⭐ | ⭐⭐⭐ | すべて | **最推奨** |
 | Keyed Services方式(動的選択) | Factory内のみ | ⭐⭐⭐ | ⭐⭐⭐ | 8以降 | 動的選択では不要 |
 | ✅ Keyed Services方式(静的選択) | 使わない | ⭐⭐⭐ | ⭐⭐⭐ | 8以降 | **静的選択に最推奨** |
+
+.NET 8以降であれば、動的選択にはステップ3(IEnumerable注入 + StrategyContext)、静的選択にはKeyed Servicesの`[FromKeyedServices]`がそれぞれ最適な選択肢です。
 
 ストラテジーパターンはGoFの時代から本質は変わっていません。  
 変わったのは「依存をどう管理するか」という手段です。
