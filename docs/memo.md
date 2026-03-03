@@ -27,3 +27,10 @@
    - 公式ドキュメント
    - 関連する技術記事
    - 自分の他の記事
+
+## slugの基準
+
+dotnet-strategy-pattern-gof-to-modern-di
+[技術]-[パターン]-[範囲]
+
+<https://claude.ai/chat/6fe1df62-3630-4fb9-b08f-5402b191f8e2>  
