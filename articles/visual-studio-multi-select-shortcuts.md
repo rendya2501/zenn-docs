@@ -1,5 +1,5 @@
 ---
-title: "Visual Studio で同じ単語を同時選択するショートカット【マルチカーソル】"
+title: "【Visual Studio】で同じ単語を同時選択するショートカット【マルチカーソル】"
 emoji: "🖱️"
 type: "tech"
 topics: ["visualstudio", "shortcuts", "tips", "editor"]
@@ -23,5 +23,5 @@ published: true
 | --- | --- | --- | --- |
 | 同じ単語を1つずつ追加 | `Ctrl + D` | `Ctrl + D` | `Shift + Alt + .` |
 | 選択を1つずつ解除 | `Ctrl + U` | `Ctrl + U` | `Shift + Alt + ,` |
-| 同じ単語をすべて一括選択 | `Ctrl + Shift + L` | `Ctrl + F2` | `Shift + Alt + ;` |
+| 同じ単語をすべて一括選択 | `Ctrl + Shift + L` | `Ctrl + F2` | `Shift + Alt + ;` or `:` |
 | 任意の場所にカーソル追加 | `Alt + クリック` | `Alt + クリック` | `Ctrl + Alt + クリック` |
