@@ -1,7 +1,7 @@
 ---
 title: "【Visual Studio】で同じ単語を同時選択するショートカット【マルチカーソル】"
 emoji: "🖱️"
-type: "tech"
+type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["visualstudio", "shortcuts", "tips", "editor"]
 published: true
 ---
