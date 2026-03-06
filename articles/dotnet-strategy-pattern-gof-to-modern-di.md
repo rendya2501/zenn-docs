@@ -250,7 +250,7 @@ GoF的なContextが有効な場面を現代の.NET開発で見つけようとす
 状態に応じてリアルタイムに戦略を切り替えるケースはStateパターンの領域に近く、UIの状態管理はFlux/MVVM、権限制御はPolicyベース認可などが担います。  
 Strategyパターンの文脈でGoF的なContextをあえて実装する理由は現代においてほぼ見当たりません。
 
-GoFのContextが担っていた「戦略を保持して実行する」という役割は、現代ではDIコンテナとStrategyContextが自然に引き受けています。  
+GoFのContextが担っていた「戦略を保持して実行する」という役割は、現代ではDIコンテナと`StrategyContext`が自然に引き受けています。  
 Contextというクラスを明示的に作らなくても、その責務はすでに別の形で満たされています。
 
 ## 3. ステップ2：Factoryパターン (Simple Factory)の導入
@@ -472,7 +472,7 @@ public class StrategyA : IStrategy
 // StrategyB、StrategyCも同様の構造で実装する
 ```
 
-**StrategyContext(IServiceProvider不使用)**  
+**StrategyContext (IServiceProvider不使用)**  
 
 ```csharp
 /// <summary>
@@ -591,7 +591,7 @@ public class DataProcessingService
 
 > **💡 TransientとDictionaryキャッシュについて**
 >
-> 戦略をTransientで登録していますが、StrategyContextはコンストラクタで受け取った`IEnumerable<IStrategy>`をDictionaryにキャッシュします。そのためScopedなStrategyContext内では、リクエストの間は同じ戦略インスタンスが使い回されます(事実上Scopedと同じ動作)。
+> 戦略をTransientで登録していますが、`StrategyContext`はコンストラクタで受け取った`IEnumerable<IStrategy>`をDictionaryにキャッシュします。そのためScopedな`StrategyContext`内では、リクエストの間は同じ戦略インスタンスが使い回されます(事実上Scopedと同じ動作)。
 >
 > これ自体は多くの場合問題ありませんが、戦略クラスがリクエストをまたいで状態を持つ設計の場合は注意が必要です。戦略をステートレス(状態を持たない)に保つことで、この挙動は安全になります。
 
