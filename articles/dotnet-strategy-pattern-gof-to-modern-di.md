@@ -690,7 +690,7 @@ Keyed ServicesはenumをキーにしてDI登録できますが、動的選択に
 キーを指定した解決には`IServiceProvider`の`GetRequiredKeyedService`を使うほかなく、広義のサービスロケーターパターン(コラム1参照)に陥ります。  
 これを避けるためにFactoryで隠蔽すると、ステップ3より複雑な構造になります。
 
-② 優位性がない → ステップ3で十分
+② 優位性がない → ステップ3(IEnumerable注入 + StrategyContext方式)で十分
 
 enumキーによるマジックストリング排除や型安全はメリットですが、ステップ3のIEnumerable方式でも同様に実現できます。
 
@@ -943,7 +943,7 @@ builder.Services.Configure<ServiceProviderOptions>(options =>
 | Keyed Services方式 (動的選択) | Factory内のみ | ⭐⭐⭐ | ⭐⭐⭐ | 8以降 | 動的選択では不要 |
 | ✅ Keyed Services方式 (静的選択) | 使わない | ⭐⭐⭐ | ⭐⭐⭐ | 8以降 | **静的選択に最推奨** |
 
-迷ったらステップ3(IEnumerable注入 + StrategyContext)を選んでください。  
+迷ったらステップ3(IEnumerable注入 + StrategyContext方式)を選んでください。  
 .NET 8以降で「このサービスには常にこの実装」という静的選択が必要な場合に限り、Keyed Servicesの`[FromKeyedServices]`を検討してください。
 
 ストラテジーパターンはGoFの時代から本質は変わっていません。  
