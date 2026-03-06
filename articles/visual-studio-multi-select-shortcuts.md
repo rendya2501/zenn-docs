@@ -6,7 +6,7 @@ topics: ["visualstudio", "shortcuts", "tips", "editor"]
 published: true
 ---
 
-VSCode系は調べれば出てくるが、Visual Studioは出てこないので、メモ代わりにまとめておく。
+VSCode系は調べれば出てくるが、Visual Studioはすんなり出てこないので、メモ代わりにまとめておく。
 
 ## Visual Studio のマルチカーソル系ショートカット
 
