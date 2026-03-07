@@ -613,7 +613,7 @@ public class DataProcessingService
 
 IEnumerable注入 + StrategyContext方式は、.NETのDIコンテナが標準でサポートしている機能であり、サービスロケーターを使わずに複数実装を扱う方法として.NETコミュニティで広く採用されているアプローチです。
 
-## 5. ステップ4：Keyed Services(.NET 8以降)
+## 5. ステップ4：Keyed Services (.NET 8以降)
 
 > **このステップについて**
 > このステップは .NET 8で追加されたKeyed Servicesの調査・研究を目的としたステップです。実用的な実装としてはステップ3の方式で十分です。そのため、最小構成での実装と説明のみとし、本番を想定した実装は行いません。
