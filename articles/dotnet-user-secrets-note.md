@@ -1,5 +1,5 @@
 ---
-title: "【.NET】dotnet user-secrets 学習メモ — 仕組みからアクセスパターンまで"
+title: "【.NET】 ユーザーシークレット 学習メモ — 仕組みからアクセスパターンまで"
 emoji: "📑"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["dotnet","csharp","security","環境構築"]
