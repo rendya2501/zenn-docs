@@ -67,7 +67,8 @@ https://github.com/rendya2501/notion-md-converter
 
 ### 3-2. secrets.json の構造
 
-`appsettings.json` と同じ JSON 形式です。コロン区切りのキーとネスト構造は等価です。
+`appsettings.json` と同じ JSON 形式です。コロン区切りのキーとネスト構造は等価です。  
+コマンドで登録すると内部的にフラット形式で保存される。直接 `secrets.json` を編集する場合はどちらでも動作する。  
 
 ```json
 // フラット形式
