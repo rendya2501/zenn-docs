@@ -171,8 +171,22 @@ JSON が不正な場合は登録時点でエラーになり、何も登録され
 }
 ```
 
+OS によってコマンドが異なります。
+
 ```bash
+# macOS / Linux / Git Bash
 cat secrets.json | dotnet user-secrets set
+
+# Windows コマンドプロンプト
+type secrets.json | dotnet user-secrets set
+```
+
+```powershell
+# Windows PowerShell（-Raw で1つの文字列として渡す必要があります）
+Get-Content secrets.json -Raw | dotnet user-secrets set
+
+# cat は Get-Content のエイリアスのため、-Raw が必要です
+cat secrets.json -Raw | dotnet user-secrets set
 ```
 
 ## 5. アプリの種類別：読み込みとアクセス方法
@@ -288,60 +302,18 @@ Console.WriteLine(settings.Key);     // "my-secret-key"
 Console.WriteLine(settings.BaseUrl); // "https://api.example.com"
 ```
 
-## 6. 他の設定管理手段との比較
-
-| 手段 | 暗号化 | Git 安全 | チーム共有 | 主な用途 |
-| --- | --- | --- | --- | --- |
-| `appsettings.json` | ✗ | ✗ | ✓ | 非機密の設定 |
-| ユーザーシークレット | ✗ | ✓ | ✗ | ローカル開発 |
-| .gitignore + .env | ✗ | △ | △ | ローカル開発 |
-| 環境変数 | ✗ | ✓ | △ | CI/CD・本番 |
-| Azure Key Vault | ✓ | ✓ | ✓ | Azure 本番環境 |
-| AWS Secrets Manager | ✓ | ✓ | ✓ | AWS 本番環境 |
-
-## 7. セキュリティの考え方と限界
+## 6. セキュリティの考え方と限界
 
 ユーザーシークレットは開発専用の仕組みであり、暗号化は行われません。  
 あくまで「誤って Git に含めない」ための仕組みである点を理解した上で使うことが重要です。  
 
 - **暗号化されていません**。ファイルシステムにアクセスできれば読まれます。
-- OS のユーザーアカウント単位で分離されているため、マルチユーザー環境では一定の保護があります。
 - セキュリティ上の信頼は「プロジェクトに含まれない＝Git に乗らない」という点のみです。
 - 本番機や共有サーバーでは**絶対に使わないでください**。
 
-## 8. 本番環境への移行パターン
+## 7. まとめ
 
-ユーザーシークレットは開発専用のため、本番環境ではクラウドのシークレット管理サービスに切り替えます。  
-Azure Key Vault 側にローカルと同じキー名（`"Api:Key"` など）で値を登録しておけば、アプリ側のコードは変更不要で、環境によって読み込み元だけが切り替わります。  
-
-```csharp
-var builder = WebApplication.CreateBuilder(args);
-
-if (builder.Environment.IsProduction())
-{
-    // 本番：Azure Key Vault から読み込む
-    var keyVaultUri = new Uri(builder.Configuration["KeyVaultUri"]!);
-    builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
-}
-// Development：ユーザーシークレットから同じキー名で自動読み込みされる
-```
-
-AWS Secrets Manager や HashiCorp Vault など他のサービスでも同じ考え方で置き換えられます。
-
-## 9. チーム開発での注意点
-
-ユーザーシークレットは**個人の開発用ツール**であり、チームでの共有を目的として設計されていません。  
-チームでシークレットを共有する用途には使わず、以下のような手段を選ぶのが適切です。  
-
-- 本番・ステージング環境：Azure Key Vault・AWS Secrets Manager などのクラウドサービス
-- CI/CD：GitHub Actions Secrets などのシークレット管理機能
-
-## 10. まとめ
-
-ユーザーシークレットは「機密情報を Git に含めない」という**開発フローの安全弁**として機能します。  
-`.gitignore + .env` と比べた最大の優位性は、プロジェクト外に保存されるという**構造的な安全性**です。  
-
-使い分けの判断軸はシンプルで、**.NET プロジェクトのローカル開発ならユーザーシークレット、Docker 中心の構成やチーム共有が必要なら .env、本番環境ならクラウドのシークレット管理サービス**を選ぶのが自然な流れです。
+ユーザーシークレットは「機密情報を Git に含めない」という**開発フローの安全弁**として機能します。`.gitignore + .env` と比べた最大の優位性は、プロジェクト外に保存されるという**構造的な安全性**です。あくまでローカル開発専用の仕組みであり、本番環境では別途シークレット管理サービスを使うことが前提です。
 
 ## 参考
 
