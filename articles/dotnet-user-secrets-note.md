@@ -10,7 +10,7 @@ published: true
 
 Notion ページを Markdown に変換するツールを開発中、Notion の認証トークンを使ったテストで `dotnet user-secrets` を使う機会があったので、ついでに自分用の学習ノートとしてまとめることにしました。
 
-アイデアや設計の方向性は自分が出し、コードの具体例やドキュメントの生成は AI（Claude Sonnet 4.6）との対話を通じて形にしています。
+アイデアや設計の方向性は自分が出し、コードの具体例やドキュメントの生成はAIとの対話を通じて形にしています。
 
 https://github.com/rendya2501/notion-md-converter
 
